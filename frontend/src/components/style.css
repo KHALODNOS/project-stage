@@ -1,0 +1,68 @@
+/*navbar*/
+.navbar label:after {
+    @apply content-[""] w-[15px] h-[15px] absolute shadow-[0px_5px_10px_rgba(0,0,0,0.2)] rounded-[15px] left-px top-px;
+    background: linear-gradient(180deg, #ffcc89, #d8860b);
+  }
+
+.navbar #darkmode-toggle:checked + label {
+    background: #55A89A;
+  }
+
+.navbar #darkmode-toggle:checked + label:after {
+    @apply left-9 translate-x-[calc(-100%)] ;
+
+    background: #333333;
+  }
+
+.navbar  #darkmode-toggle:checked + label svg.sun {
+    fill:#7e7e7e;
+  }
+.navbar #darkmode-toggle:checked + label svg.moon {
+    fill:#666666;
+  }
+.navbar  .SearchBar {
+    @apply h-7 text-white font-semibold border-[none];
+    direction: rtl;
+    background: inherit;
+    outline: none;
+}
+
+.navbar .btn {
+    @apply no-underline leading-[48px] text-[rgba(255,255,255,0.7)] font-medium hover:text-[#ffffff];
+}
+  .line {
+    @apply fill-none stroke-white stroke-[6];
+    transition: stroke-dasharray 600ms cubic-bezier(0.4, 0, 0.2, 1),
+      stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .line1 {
+    @apply stroke-[6];
+    stroke-dasharray: 60 207;
+  }
+  .line2 {
+    @apply stroke-[6];
+    stroke-dasharray: 60 60;
+  }
+  .line3 {
+    @apply stroke-[6];
+    stroke-dasharray: 60 207;
+  }
+  .opened .line1 {
+    @apply stroke-[6];
+    stroke-dasharray: 90 207;
+    stroke-dashoffset: -134;
+  }
+  .opened .line2 {
+    @apply stroke-[6];
+    stroke-dasharray: 1 60;
+    stroke-dashoffset: -30;
+  }
+  .opened .line3 {
+    @apply stroke-[6];
+    stroke-dasharray: 90 207;
+    stroke-dashoffset: -134;
+  }
+
+  .RightNav .content.active a {
+    @apply max767:mr-[10px]
+  }

@@ -1,0 +1,21 @@
+.swipers > .swiper {
+    @apply w-full;
+  }
+.swiper-button-lock {
+    @apply block;
+  }
+.bar {
+  @apply flex justify-between items-center rounded-[5px_5px_0px_0px]
+}
+
+.bar-green p {
+  color: #fff;
+}
+.bar .All a {
+  background-color: #000;
+  color: #fff;
+  padding: 3px 15px 1px 15px;
+  border-radius: 2px;
+  margin-left: 30px;
+  font-size: 10px;
+}

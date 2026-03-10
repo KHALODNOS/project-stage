@@ -1,0 +1,22 @@
+/*Global*/
+  .pad{
+    @apply my-0 mx-2 items-center
+  }
+  .Info .tag {
+    @apply no-underline text-white bg-[#429486] w-fit text-center text-xs pt-[3px] pb-px px-[15px] rounded-[20px] max1092:text-[11px] max1092:pt-0.5 max1092:pb-0 max1092:px-2
+  }
+  .title:hover {
+    @apply text-[#1c8b78] 
+  }
+  
+
+/*Rightbar*/
+ .rightbar .genres {
+   direction: rtl
+ }
+
+ .rightbar .genres .genre a {
+   @apply text-[11px] flex self-center ml-[5px] pt-[3px] pb-px px-2.5 p-0;
+
+ }
+

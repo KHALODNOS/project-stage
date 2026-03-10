@@ -1,0 +1,18 @@
+html .info{
+    --color-1:#555;
+}
+html.active .info{
+    --color-1:#999;
+}
+.info .moreinfo span{
+    @apply flex-col
+}
+.info .moreinfo span p:nth-child(1){
+    @apply text-[var(--color-1)] text-sm
+}
+.info .moreinfo span p:nth-child(2){
+    @apply text-[var(--color-text)]
+}
+.info .novel-info svg {
+    @apply inline
+}
