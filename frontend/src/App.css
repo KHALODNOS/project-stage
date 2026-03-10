@@ -1,0 +1,18 @@
+/*Costume container*/
+/*Global*/
+.cocontainer{
+  @apply my-0  mx-3 md:w-[750px] md:ml-auto md:mr-auto lg:w-[1014px] xl:w-[1270px] 2xl:w-[1510px]
+}
+
+.barp{
+  @apply my-2 mx-7 text-[var(--color-text)] font-bold;
+}
+
+.containerbg{
+    @apply flex flex-col gap-[15px] bg-[color:var(--color-bg)] pb-[30px] rounded-[5px];
+    direction: rtl;
+}
+
+
+
+

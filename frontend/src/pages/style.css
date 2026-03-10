@@ -1,0 +1,8 @@
+.title {
+    @apply font-NotoKufi
+}
+
+/*Novel*/
+span {
+    @apply flex
+}
