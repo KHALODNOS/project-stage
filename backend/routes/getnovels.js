@@ -1,9 +1,6 @@
 const express = require('express');
 const Novel = require('../models/novel'); // Adjust the path to your model
 const router = express.Router();
-
-
-
 // Get popular novels
 router.get(['/popular', '/popular/:viewType'], async (req, res) => {
   const viewType = req.params.viewType || 'daily';
@@ -57,3 +54,4 @@ router.get('/views/:viewType', async (req, res) => {
   }
 });
 module.exports = router;
+
