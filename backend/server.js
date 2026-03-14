@@ -9,6 +9,7 @@ const chapterRoutes = require("./routes/chapter");
 const getnovels = require("./routes/getnovels");
 const searchRoutes = require("./routes/search");
 const messageRoutes = require("./routes/messages");
+const videoRoutes = require("./routes/video");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const corsOptions = require("./config/corsOptions");
@@ -108,7 +109,8 @@ io.on("connection", (socket) => {
 
 app.use(cors(corsOptions));
 app.use(cookieParser());
-// app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/videos', express.static(path.join(__dirname, 'videos')));
 
 // Middleware
 app.use(bodyParser.json());
@@ -138,6 +140,9 @@ app.use("/search", searchRoutes);
 
 // Messages
 app.use("/", messageRoutes);
+
+// Video
+app.use("/video", videoRoutes);
 
 // 404 Handler - Return JSON instead of default HTML
 app.use((req, res, next) => {

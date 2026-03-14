@@ -1,67 +1,36 @@
-const admin = require('firebase-admin');
-const serviceAccount = require('../webnovels-6526c-firebase-adminsdk-1od94-a801cffe16.json');
 const path = require('path');
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  storageBucket: 'webnovels-6526c.appspot.com' // Replace with your Firebase project ID
-});
-
-const bucket = admin.storage().bucket();
+const fs = require('fs');
 
 const uploadImageToFirebase = async (file, folder = '') => {
-  const fileName = `${folder}/${Date.now()}${path.extname(file.originalname)}`;
-  const blob = bucket.file(fileName);
-  const blobStream = blob.createWriteStream({
-    metadata: {
-      contentType: file.mimetype,
-    },
-  });
+  // Fallback to storing locally since Firebase credentials are an issue
+  const uploadDir = path.join(__dirname, '..', 'uploads', folder);
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
 
-  return new Promise((resolve, reject) => {
-    blobStream.on('error', (err) => reject(err));
-    blobStream.on('finish', () => {
-      blob.getSignedUrl({
-        action: 'read',
-        expires: '03-01-2500'
-      }).then(urls => {
-        resolve(urls[0]);
-      });
-    });
-    blobStream.end(file.buffer);
-  });
+  const fileName = `${Date.now()}${path.extname(file.originalname)}`;
+  const filePath = path.join(uploadDir, fileName);
+
+  fs.writeFileSync(filePath, file.buffer);
+  
+  // Return the relative path to be saved in DB
+  return folder ? `${folder}/${fileName}` : fileName;
 };
 
 const deleteImageFromFirebase = async (imageUrl) => {
   try {
-    const urlParts = imageUrl.split('/');
-    const fileName = urlParts[urlParts.length - 1].split('?')[0];
-    console.log(`Attempting to delete file: ${fileName}`);
-    console.log(`Full image URL: ${imageUrl}`);
-
-    const file = bucket.file(fileName);
-    
-    const [exists] = await file.exists();
-    if (!exists) {
-      console.log(`File ${fileName} does not exist in the root. Checking subfolders...`);
-      // Attempt to find the file in subfolders
-      const [files] = await bucket.getFiles();
-      const matchingFile = files.find(f => f.name.endsWith(fileName));
-      if (matchingFile) {
-        console.log(`Found file in: ${matchingFile.name}`);
-        await matchingFile.delete();
-        console.log(`Successfully deleted ${matchingFile.name}`);
-        return;
+    // Check if it's a local file format and try to delete it
+    if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+      const filePath = path.join(__dirname, '..', 'uploads', imageUrl);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+        console.log(`Successfully deleted local file: ${filePath}`);
       }
-      console.log(`File ${fileName} not found in any subfolder.`);
-      return;
+    } else {
+        console.log(`Cannot delete Firebase file as credentials are invalid: ${imageUrl}`);
     }
-    
-    await file.delete();
-    console.log(`Successfully deleted ${fileName}`);
   } catch (error) {
-    console.error('Error deleting file:', error);
-    throw error;
+    console.error('Error deleting local file:', error);
   }
 };
 

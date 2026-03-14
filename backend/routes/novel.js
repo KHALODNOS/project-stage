@@ -180,7 +180,6 @@ router.put(
   async (req, res) => {
     try {
       const novelId = req.params.id
-
       let novel = await Novel.findById(novelId)
       if (!novel) {
         return res.status(404).send('Novel not found')
