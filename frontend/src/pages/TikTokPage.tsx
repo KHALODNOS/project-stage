@@ -99,7 +99,7 @@ const TikTokPage = () => {
                 {token && (
                     <button
                         onClick={handleUploadClick}
-                        className="bg-red-500 hover:bg-red-600 text-white p-2 px-4 rounded-full font-bold flex items-center gap-2 transition"
+                        className="bg-primary hover:bg-primary/80 text-white p-2 px-4 rounded-full font-bold flex items-center gap-2 transition"
                     >
                         <FaPlus size={14} /> إضافة
                     </button>
@@ -135,7 +135,7 @@ const TikTokPage = () => {
                                     type="file"
                                     accept="video/*"
                                     onChange={handleFileChange}
-                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
+                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
                                     required
                                 />
                             </div>
@@ -145,7 +145,7 @@ const TikTokPage = () => {
                                 <textarea
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
-                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white placeholder-gray-500 focus:outline-none focus:border-red-500"
+                                    className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary"
                                     rows={3}
                                     placeholder="اكتب وصفاً للفيديو..."
                                 ></textarea>
@@ -155,7 +155,7 @@ const TikTokPage = () => {
                                 <button
                                     type="submit"
                                     disabled={!uploadFile}
-                                    className="flex-1 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-bold py-3 px-4 rounded-xl transition disabled:opacity-50"
+                                    className="flex-1 bg-gradient-to-r from-primary to-sage-700 hover:from-primary/90 hover:to-sage-700/90 text-white font-bold py-3 px-4 rounded-xl transition disabled:opacity-50"
                                 >
                                     نشر الفيديو
                                 </button>

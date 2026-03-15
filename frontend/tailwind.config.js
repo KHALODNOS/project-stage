@@ -41,6 +41,18 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        sage: {
+          50: "#f2f8f7",
+          100: "#deedea",
+          200: "#bddad4",
+          300: "#96c0b7",
+          400: "#78afa4",
+          500: "#5da397",
+          600: "#4a857b",
+          700: "#3d6b64",
+          800: "#345651",
+          900: "#2e4844",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -63,12 +75,18 @@ export default {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
         },
+        "tilt": {
+          "0%, 100%": { transform: "rotate(0deg)" },
+          "25%": { transform: "rotate(0.5deg)" },
+          "75%": { transform: "rotate(-0.5deg)" },
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "shimmer": "shimmer 2s infinite",
         "float": "float 3s ease-in-out infinite",
+        "tilt": "tilt 5s ease-in-out infinite",
       },
     },
     screens: {
@@ -85,10 +103,13 @@ export default {
       'NotoKufi': ["Noto Kufi Arabic", "sans-serif"],
       "Cairo": ["Cairo", "sans-serif"],
       "Fira": ["Fira Sans", "sans-serif"],
-      "elmessiri": "El Messiri"
+      "elmessiri": ["El Messiri", "serif"],
+      "inter": ["Inter", "sans-serif"],
+      "poppins": ["Poppins", "sans-serif"],
     }
   },
   plugins: [],
 }
+
 
 

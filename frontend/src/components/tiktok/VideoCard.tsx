@@ -109,7 +109,7 @@ const VideoCard = ({ video, onStatsChange }: VideoCardProps) => {
             <video
                 ref={videoRef}
                 src={`${apiUrl}${video.videoUrl}`}
-                className="h-full w-full object-contain"
+                className="h-full w-full object-cover"
                 loop
                 playsInline
                 onClick={togglePlay}

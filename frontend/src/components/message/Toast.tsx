@@ -41,7 +41,7 @@ const Toast: React.FC<ToastProps> = ({ message, description, type, duration = 30
       case 'error':
         return 'text-red-500';
       case 'info':
-        return 'text-blue-500';
+        return 'text-sage-500';
     }
   };
 

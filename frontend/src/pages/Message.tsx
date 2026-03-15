@@ -10,9 +10,11 @@ import {
   Hash,
   Sidebar as SidebarIcon,
   MessageSquare,
+  Circle,
   MoreVertical,
   Paperclip,
-  Plus
+  Plus,
+  X
 } from "lucide-react";
 import { AuthContext } from "../store/context";
 import { apiUrl, urlimage } from "../utils/constvar";
@@ -68,7 +70,7 @@ const formatDate = (iso?: string) => {
 
 const ROLE_META: Record<string, { label: string; color: string; bg: string }> = {
   admin: { label: "مدير", color: "text-rose-400", bg: "bg-rose-500/10 border-rose-500/20" },
-  translator: { label: "مترجم", color: "text-violet-400", bg: "bg-violet-500/10 border-violet-500/20" },
+  translator: { label: "مترجم", color: "text-sage-500", bg: "bg-sage-500/10 border-sage-500/20" },
   user: { label: "عضو", color: "text-sky-400", bg: "bg-sky-500/10 border-sky-500/20" },
 };
 
@@ -183,321 +185,303 @@ const Message: React.FC = () => {
   const grouped = groupByDate(messages);
 
   return (
-    <div className="h-[calc(100vh-100px)] bg-[#0a0a0f] flex flex-col py-0 md:py-6 md:px-6 font-NotoKufi" dir="rtl" onClick={() => setEmojiPickerFor(null)}>
+    <div className="flex h-[calc(100vh-80px)] overflow-hidden bg-[#0d0d14] font-NotoKufi" dir="rtl" onClick={() => setEmojiPickerFor(null)}>
 
-      {/* Background Decorations */}
-      <div className="fixed inset-0 pointer-events-none opacity-20 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-violet-600 rounded-full blur-[120px]" />
-      </div>
-
-      <div className="flex-1 max-w-[1600px] w-full mx-auto flex overflow-hidden glass md:rounded-[2.5rem] border-white/5 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] relative z-10 transition-all duration-500">
-
-        {/* ═══ SIDEBAR ═══ */}
-        <AnimatePresence mode="wait">
-          {sidebarOpen && (
-            <motion.aside
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 320, opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
-              className="hidden lg:flex flex-col border-l border-white/5 bg-black/20 overflow-hidden"
-            >
-              <div className="p-8 border-b border-white/5">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-2xl font-black text-white font-elmessiri">المجتمع</h3>
-                  <div className="p-2.5 glass rounded-xl text-primary">
-                    <Users className="w-5 h-5" />
-                  </div>
+      {/* ═══ SIDEBAR ═══ */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.aside
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 320, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            className="hidden lg:flex flex-col border-l border-white/5 bg-[#0a0a0f] overflow-hidden"
+          >
+            <div className="p-6 border-b border-white/5 bg-white/[0.02]">
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="text-xl font-black text-white font-elmessiri">المجتمع</h3>
+                <div className="p-2 glass rounded-lg text-primary">
+                  <Users className="w-5 h-5" />
                 </div>
-                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em]">The Infinite Chat Room</p>
               </div>
+              <p className="text-xs text-zinc-500 font-bold uppercase tracking-widest">غرفة الدردشة العامة</p>
+            </div>
 
-              <div className="flex-1 overflow-y-auto px-6 py-8 space-y-8 scroll-thin">
-                <div>
-                  <div className="flex items-center gap-2 mb-6 px-1">
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_12px_#10b981]" />
-                    <span className="text-[11px] font-black text-zinc-500 uppercase tracking-widest">متصل الآن — {onlineUsers.length}</span>
-                  </div>
-                  <div className="space-y-2">
-                    {onlineUsers.length === 0 ? (
-                      <p className="text-center py-12 text-zinc-800 text-sm font-bold">لا يوجد أحد متصل...</p>
-                    ) : (
-                      onlineUsers.map((u) => (
-                        <div key={u.socketId} className="flex items-center gap-4 p-3.5 rounded-2xl hover:bg-white/[0.05] transition-all group cursor-default">
-                          <div className="relative">
-                            <img
-                              src={u.image ? `${urlimage}/${u.image}` : avatarFallback(u.nickname)}
-                              alt={u.nickname}
-                              className="w-11 h-11 rounded-2xl object-cover border-2 border-white/5 group-hover:border-primary/40 transition-all"
-                              onError={(e) => ((e.target as HTMLImageElement).src = avatarFallback(u.nickname))}
-                            />
-                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-[3px] border-[#0d0d14] rounded-full" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-black text-zinc-100 truncate mb-1">{u.nickname}</p>
-                            <span className={cn(
-                              "inline-block text-[9px] font-bold px-2 py-0.5 rounded-md border",
-                              ROLE_META[u.role]?.bg || ROLE_META.user.bg,
-                              ROLE_META[u.role]?.color || ROLE_META.user.color
-                            )}>
-                              {ROLE_META[u.role]?.label || u.role}
-                            </span>
-                          </div>
+            <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
+              <div>
+                <div className="flex items-center gap-2 mb-4 px-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" />
+                  <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">متصل الآن — {onlineUsers.length}</span>
+                </div>
+                <div className="space-y-1">
+                  {onlineUsers.length === 0 ? (
+                    <p className="text-center py-10 text-zinc-700 text-sm italic">لا يوجد أحد متصل</p>
+                  ) : (
+                    onlineUsers.map((u) => (
+                      <div key={u.socketId} className="flex items-center gap-3 p-3 rounded-2xl hover:bg-white/[0.03] transition-all group">
+                        <div className="relative">
+                          <img
+                            src={u.image ? `${urlimage}/${u.image}` : avatarFallback(u.nickname)}
+                            alt={u.nickname}
+                            className="w-10 h-10 rounded-xl object-cover border border-white/10 group-hover:border-primary/50 transition-colors"
+                            onError={(e) => ((e.target as HTMLImageElement).src = avatarFallback(u.nickname))}
+                          />
+                          <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-[#0a0a0f] rounded-full" />
                         </div>
-                      ))
-                    )}
-                  </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-zinc-300 truncate">{u.nickname}</p>
+                          <span className={cn(
+                            "inline-block text-[9px] font-black px-2 py-0.5 rounded-md border",
+                            ROLE_META[u.role]?.bg || ROLE_META.user.bg,
+                            ROLE_META[u.role]?.color || ROLE_META.user.color
+                          )}>
+                            {ROLE_META[u.role]?.label || u.role}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
+            </div>
 
-              {/* Self Profile */}
-              <div className="p-6 bg-black/40 border-t border-white/5 flex items-center gap-4">
+            {/* Current User Card */}
+            <div className="p-4 bg-white/[0.03] border-t border-white/5 flex items-center gap-3">
+              <div className="relative">
                 <img
                   src={user.image ? `${urlimage}/${user.image}` : avatarFallback(user.nickname)}
                   alt={user.nickname}
-                  className="w-12 h-12 rounded-2xl object-cover border-2 border-primary shadow-2xl shadow-primary/20"
+                  className="w-11 h-11 rounded-xl object-cover border-2 border-primary shadow-lg shadow-primary/20"
+                  onError={(e) => ((e.target as HTMLImageElement).src = avatarFallback(user.nickname))}
                 />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-black text-white truncate">{user.nickname}</p>
-                  <p className="text-[10px] text-zinc-500 font-bold">أنت (@{user.username})</p>
-                </div>
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-[#0a0a0f] rounded-full" />
               </div>
-            </motion.aside>
-          )}
-        </AnimatePresence>
-
-        {/* ═══ MAIN CHAT AREA ═══ */}
-        <main className="flex-1 flex flex-col relative bg-transparent">
-
-          {/* Integrated Header */}
-          <header className="h-24 flex items-center justify-between px-8 bg-black/10 backdrop-blur-xl border-b border-white/5 z-20">
-            <div className="flex items-center gap-6">
-              <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-3 glass rounded-2xl text-zinc-500 hover:text-white transition-all shadow-xl"
-              >
-                <SidebarIcon className="w-5 h-5" />
-              </button>
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-primary/10 text-primary rounded-2xl border border-primary/20">
-                  <Hash className="w-5 h-5" />
-                </div>
-                <div className="space-y-0.5">
-                  <h2 className="text-xl font-black text-white font-elmessiri">الدردشة العامة</h2>
-                  <p className="text-[10px] text-primary font-black uppercase tracking-[0.2em]">{onlineUsers.length} من الأعضاء متواجدون</p>
-                </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-black text-white truncate">{user.nickname}</p>
+                <span className="text-[10px] text-primary font-bold opacity-70">أنت (@{user.username})</span>
               </div>
             </div>
-            <button className="w-12 h-12 glass rounded-2xl flex items-center justify-center text-zinc-400 hover:text-white transition-all shadow-lg">
+          </motion.aside>
+        )}
+      </AnimatePresence>
+
+      {/* ═══ MAIN CHAT AREA ═══ */}
+      <main className="flex-1 flex flex-col relative bg-[#0d0d14]">
+
+        {/* Top Glass Bar */}
+        <header className="h-20 flex items-center justify-between px-6 glass sticky top-0 z-20 border-b border-white/5">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-2.5 glass rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 transition-all hidden lg:block"
+            >
+              <SidebarIcon className="w-5 h-5" />
+            </button>
+            <div className="flex items-center gap-3 px-3 py-1.5 glass rounded-2xl bg-primary/5 border-primary/20">
+              <div className="p-2 bg-primary rounded-lg text-white">
+                <Hash className="w-4 h-4" />
+              </div>
+              <div>
+                <h2 className="text-base font-black text-white leading-tight">الدردشة العامة</h2>
+                <p className="text-[10px] text-primary font-bold uppercase tracking-widest">{onlineUsers.length} متصل الآن</p>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="p-2.5 glass rounded-xl text-zinc-400 hover:text-white transition-all">
               <MoreVertical className="w-5 h-5" />
             </button>
-          </header>
-
-          {/* Messages List */}
-          <div className="flex-1 overflow-y-auto px-6 md:px-12 py-10 space-y-12 custom-scrollbar scroll-smooth">
-            {loading ? (
-              <div className="h-full flex items-center justify-center"><Loader /></div>
-            ) : messages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center space-y-6 opacity-20">
-                <div className="p-8 glass rounded-full">
-                  <MessageSquare className="w-24 h-24 text-zinc-500" />
-                </div>
-                <p className="text-2xl font-black font-elmessiri">ابدأ المحادثة الآن</p>
-              </div>
-            ) : (
-              grouped.map((group) => (
-                <div key={group.date} className="space-y-10">
-                  <div className="flex items-center gap-6">
-                    <div className="h-px bg-gradient-to-l from-transparent to-white/5 flex-1" />
-                    <span className="text-[11px] font-black text-zinc-600 uppercase tracking-[0.3em] px-6 py-2 glass rounded-2xl border border-white/5">{group.date}</span>
-                    <div className="h-px bg-gradient-to-r from-transparent to-white/5 flex-1" />
-                  </div>
-
-                  {group.messages.map((m) => {
-                    const isOwn = m.sender === myId;
-                    const rm = ROLE_META[m.senderRole] || ROLE_META.user;
-                    const reactionCounts = (m.reactions ?? []).reduce<Record<string, number>>((acc, r) => {
-                      acc[r.emoji] = (acc[r.emoji] ?? 0) + 1;
-                      return acc;
-                    }, {});
-
-                    return (
-                      <motion.div
-                        key={m._id}
-                        initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        className={cn(
-                          "flex items-end gap-4 max-w-[90%] md:max-w-[75%]",
-                          isOwn ? "flex-row-reverse self-end mr-auto" : "self-start ml-auto"
-                        )}
-                      >
-                        {!isOwn && (
-                          <motion.img
-                            whileHover={{ scale: 1.1 }}
-                            src={m.senderImage ? `${urlimage}/${m.senderImage}` : avatarFallback(m.senderNickname)}
-                            alt={m.senderNickname}
-                            className="w-10 h-10 rounded-2xl object-cover border border-white/10 shrink-0 shadow-xl shadow-black/40"
-                            onError={(e) => ((e.target as HTMLImageElement).src = avatarFallback(m.senderNickname))}
-                          />
-                        )}
-
-                        <div className={cn("flex flex-col", isOwn ? "items-end text-left" : "items-start text-right")}>
-                          {!isOwn && (
-                            <div className="flex items-center gap-2 mb-2 px-1">
-                              <span className="text-sm font-black text-zinc-300">{m.senderNickname}</span>
-                              <span className={cn("text-[9px] font-bold px-2 py-0.5 rounded-lg border", rm.bg, rm.color)}>
-                                {rm.label}
-                              </span>
-                            </div>
-                          )}
-
-                          <div className="relative group">
-                            <div className={cn(
-                              "relative px-6 py-4 rounded-[1.8rem] shadow-2xl transition-all duration-300",
-                              isOwn
-                                ? "bg-primary text-white rounded-br-none shadow-primary/20"
-                                : "glass bg-white/[0.04] border border-white/10 text-zinc-100 rounded-bl-none shadow-black/50"
-                            )}>
-                              <p className="text-base leading-relaxed whitespace-pre-wrap font-medium">{m.text}</p>
-                              <div className={cn(
-                                "text-[10px] mt-3 font-bold tracking-wider opacity-40",
-                                isOwn ? "text-white text-end" : "text-zinc-500 text-start"
-                              )}>
-                                {formatTime(m.createdAt)}
-                              </div>
-                            </div>
-
-                            {/* Floating Reaction Trigger */}
-                            <div className={cn(
-                              "absolute top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300",
-                              isOwn ? "right-full mr-4" : "left-full ml-4"
-                            )}>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setEmojiPickerFor(emojiPickerFor === m._id ? null : m._id);
-                                }}
-                                className="w-10 h-10 glass rounded-2xl flex items-center justify-center text-zinc-500 hover:text-primary hover:scale-110 active:scale-95 transition-all shadow-xl"
-                              >
-                                <Smile className="w-5 h-5" />
-                              </button>
-                            </div>
-
-                            {/* Emoji Picker Overlay */}
-                            <AnimatePresence>
-                              {emojiPickerFor === m._id && (
-                                <motion.div
-                                  initial={{ opacity: 0, scale: 0.5, y: 20 }}
-                                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                                  exit={{ opacity: 0, scale: 0.5, y: 20 }}
-                                  className={cn(
-                                    "absolute bottom-full mb-4 p-3 glass rounded-[2rem] border border-white/10 z-[100] flex gap-3 shadow-[0_20px_50px_rgba(0,0,0,0.8)]",
-                                    isOwn ? "left-0" : "right-0"
-                                  )}
-                                >
-                                  {EMOJIS.map((em) => (
-                                    <button
-                                      key={em}
-                                      onClick={() => react(m._id, em)}
-                                      className="text-2xl hover:scale-150 transition-transform p-1"
-                                    >
-                                      {em}
-                                    </button>
-                                  ))}
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                          </div>
-
-                          {/* Reactions Chips */}
-                          {Object.keys(reactionCounts).length > 0 && (
-                            <div className={cn("flex flex-wrap gap-2 mt-2", isOwn ? "justify-end" : "justify-start")}>
-                              {Object.entries(reactionCounts).map(([emoji, count]) => (
-                                <button
-                                  key={emoji}
-                                  onClick={(e) => { e.stopPropagation(); react(m._id, emoji); }}
-                                  className="flex items-center gap-2 px-3 py-1.5 glass rounded-full border border-white/10 text-sm hover:bg-white/10 transition-all shadow-sm"
-                                >
-                                  <span>{emoji}</span>
-                                  <span className="font-black text-primary text-xs">{count}</span>
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              ))
-            )}
-            <div ref={bottomRef} />
           </div>
+        </header>
 
-          {/* App-like Input Section */}
-          <div className="p-8 bg-black/5 flex justify-center">
-            <div className="w-full max-w-4xl relative group">
-              <div className="p-1 glass rounded-[2.5rem] bg-white/[0.04] border border-white/10 shadow-2xl focus-within:border-primary/50 focus-within:bg-white/[0.06] transition-all">
-                <div className="flex items-end gap-2 p-2">
-                  <div className="flex gap-1 mb-2">
-                    <button className="p-3 text-zinc-500 hover:text-white hover:bg-white/5 rounded-2xl transition-all">
-                      <Paperclip className="w-5 h-5" />
-                    </button>
-                    <button className="p-3 text-zinc-500 hover:text-white hover:bg-white/5 rounded-2xl transition-all">
-                      <Plus className="w-5 h-5" />
-                    </button>
-                  </div>
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto px-4 md:px-8 py-10 space-y-8 custom-scrollbar scroll-smooth">
+          {loading ? (
+            <div className="h-full flex items-center justify-center"><Loader /></div>
+          ) : messages.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center space-y-4 opacity-20">
+              <MessageSquare className="w-20 h-20 text-zinc-500" />
+              <p className="text-xl font-black">لا توجد رسائل بعد</p>
+            </div>
+          ) : (
+            grouped.map((group) => (
+              <div key={group.date} className="space-y-8">
+                <div className="flex items-center gap-4 text-center">
+                  <div className="h-px bg-white/5 flex-1" />
+                  <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] px-4 py-1.5 glass rounded-full">{group.date}</span>
+                  <div className="h-px bg-white/5 flex-1" />
+                </div>
 
-                  <textarea
-                    ref={inputRef as any}
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    onKeyDown={handleKeyDown as any}
-                    placeholder="اكتب رسالة للمجتمع..."
-                    rows={1}
-                    maxLength={1000}
-                    className="flex-1 bg-transparent border-none py-4 px-4 text-zinc-100 text-sm focus:ring-0 outline-none resize-none max-h-48 font-medium h-[56px] placeholder:text-zinc-600"
-                  />
+                {group.messages.map((m, idx) => {
+                  const isOwn = m.sender === myId;
+                  const rm = ROLE_META[m.senderRole] || ROLE_META.user;
+                  const reactionCounts = (m.reactions ?? []).reduce<Record<string, number>>((acc, r) => {
+                    acc[r.emoji] = (acc[r.emoji] ?? 0) + 1;
+                    return acc;
+                  }, {});
 
-                  <div className="flex items-center gap-3">
-                    <button className="p-3 text-zinc-500 hover:text-white transition-all">
-                      <Smile className="w-5 h-5" />
-                    </button>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={sendMessage}
-                      disabled={!text.trim()}
+                  return (
+                    <motion.div
+                      key={m._id}
+                      initial={{ opacity: 0, x: isOwn ? 20 : -20, scale: 0.95 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
                       className={cn(
-                        "w-12 h-12 rounded-[1.5rem] flex items-center justify-center transition-all",
-                        text.trim()
-                          ? "bg-primary text-white shadow-xl shadow-primary/30"
-                          : "bg-white/5 text-zinc-700 opacity-50"
+                        "flex items-end gap-3 max-w-[85%] md:max-w-[70%]",
+                        isOwn ? "flex-row-reverse self-end mr-auto" : "self-start ml-auto"
                       )}
                     >
-                      <SendHorizontal className="w-6 h-6 rotate-180" />
-                    </motion.button>
-                  </div>
-                </div>
-              </div>
+                      {/* Avatar */}
+                      {!isOwn && (
+                        <img
+                          src={m.senderImage ? `${urlimage}/${m.senderImage}` : avatarFallback(m.senderNickname)}
+                          alt={m.senderNickname}
+                          className="w-10 h-10 rounded-2xl object-cover border border-white/10 shrink-0"
+                          onError={(e) => ((e.target as HTMLImageElement).src = avatarFallback(m.senderNickname))}
+                        />
+                      )}
 
-              {/* Char counter */}
-              <AnimatePresence>
-                {text.length > 700 && (
-                  <motion.span
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute -top-8 left-8 text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 px-3 py-1 rounded-full border border-primary/20"
-                  >
-                    {text.length} / 1000
-                  </motion.span>
-                )}
-              </AnimatePresence>
+                      <div className={cn("flex flex-col gap-2", isOwn ? "items-end" : "items-start")}>
+                        {/* Meta Info */}
+                        {!isOwn && (
+                          <div className="flex items-center gap-2 mb-1 px-1">
+                            <span className="text-sm font-black text-zinc-400">{m.senderNickname}</span>
+                            <span className={cn("text-[9px] font-black px-1.5 py-0.5 rounded border opacity-70", rm.bg, rm.color)}>
+                              {rm.label}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Bubble Wrapper */}
+                        <div className="relative group">
+                          <div className={cn(
+                            "relative px-5 py-3 rounded-3xl shadow-2xl",
+                            isOwn
+                              ? "bg-primary text-white rounded-br-none"
+                              : "bg-white/[0.05] border border-white/5 backdrop-blur-md text-zinc-200 rounded-bl-none"
+                          )}>
+                            <p className="text-sm leading-relaxed whitespace-pre-wrap">{m.text}</p>
+                            <div className={cn(
+                              "text-[9px] mt-2 opacity-50 font-bold",
+                              isOwn ? "text-white" : "text-zinc-500 text-left"
+                            )}>
+                              {formatTime(m.createdAt)}
+                            </div>
+                          </div>
+
+                          {/* Quick Actions (Floating) */}
+                          <div className={cn(
+                            "absolute top-0 opacity-0 group-hover:opacity-100 transition-all duration-200 z-10",
+                            isOwn ? "left-full ml-2" : "right-full mr-2"
+                          )}>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEmojiPickerFor(emojiPickerFor === m._id ? null : m._id);
+                              }}
+                              className="p-2 glass rounded-xl text-zinc-500 hover:text-primary hover:bg-white/10"
+                            >
+                              <Smile className="w-4 h-4" />
+                            </button>
+                          </div>
+
+                          {/* Emoji Picker Overlay */}
+                          <AnimatePresence>
+                            {emojiPickerFor === m._id && (
+                              <motion.div
+                                initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.8, y: 10 }}
+                                onClick={(e) => e.stopPropagation()}
+                                className={cn(
+                                  "absolute bottom-full mb-3 p-2 glass rounded-2xl border border-white/10 z-[100] flex gap-2 shadow-2xl",
+                                  isOwn ? "left-0" : "right-0"
+                                )}
+                              >
+                                {EMOJIS.map((em) => (
+                                  <button
+                                    key={em}
+                                    onClick={() => react(m._id, em)}
+                                    className="text-xl hover:scale-125 transition-transform"
+                                  >
+                                    {em}
+                                  </button>
+                                ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+
+                        {/* Reactions Chips */}
+                        {Object.keys(reactionCounts).length > 0 && (
+                          <div className={cn("flex flex-wrap gap-1.5 mt-1 animate-in zoom-in-50", isOwn ? "justify-end" : "justify-start")}>
+                            {Object.entries(reactionCounts).map(([emoji, count]) => (
+                              <button
+                                key={emoji}
+                                onClick={(e) => { e.stopPropagation(); react(m._id, emoji); }}
+                                className="flex items-center gap-1.5 px-2 py-1 glass rounded-full border border-white/5 text-xs hover:bg-white/10 transition-colors"
+                              >
+                                <span>{emoji}</span>
+                                <span className="font-bold text-zinc-500">{count}</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            ))
+          )}
+          <div ref={bottomRef} />
+        </div>
+
+        {/* ═══ INPUT AREA (Sticky Footer) ═══ */}
+        <div className="p-4 md:p-6 glass border-t border-white/5 bg-white/[0.02] backdrop-blur-xl">
+          <div className="max-w-5xl mx-auto flex items-end gap-3">
+            <div className="flex-1 relative group">
+              <div className="absolute right-4 bottom-4 p-2 text-zinc-600 group-focus-within:text-primary transition-colors">
+                <Plus className="w-5 h-5" />
+              </div>
+              <textarea
+                ref={inputRef as any}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                onKeyDown={handleKeyDown as any}
+                placeholder="اكتب رسالة..."
+                rows={1}
+                maxLength={1000}
+                className="w-full bg-[#13131f] border border-white/10 rounded-[28px] py-4 pr-12 pl-14 text-zinc-200 text-sm focus:border-primary focus:ring-1 focus:ring-primary/50 outline-none transition-all resize-none max-h-40 font-medium"
+                style={{ minHeight: '56px' }}
+              />
+              <div className="absolute left-4 bottom-4 flex gap-2 text-zinc-500">
+                <button className="hover:text-primary transition-colors">
+                  <Paperclip className="w-5 h-5" />
+                </button>
+                <button className="hover:text-primary transition-colors">
+                  <Smile className="w-5 h-5" />
+                </button>
+              </div>
+              {text.length > 800 && (
+                <span className="absolute -top-6 left-4 text-[10px] font-black text-rose-500 uppercase tracking-widest">{text.length}/1000</span>
+              )}
             </div>
+
+            <button
+              onClick={sendMessage}
+              disabled={!text.trim()}
+              className={cn(
+                "p-4 rounded-3xl transition-all shadow-2xl",
+                text.trim()
+                  ? "bg-primary text-white shadow-primary/30 hover:scale-105 active:scale-95"
+                  : "bg-white/5 text-zinc-700 cursor-not-allowed"
+              )}
+            >
+              <SendHorizontal className="w-6 h-6 rotate-180" />
+            </button>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 };

@@ -131,7 +131,7 @@ const Info = () => {
                   {novel?.status || "مستمر"}
                 </span>
                 <div className="flex items-center">
-                  {(ctx?.user?.role === "admin" || novel?.translators?.includes(ctx?.user?.username || '')) && (
+                  {(ctx?.user?.role === "admin" || ctx?.user?.role === "translator") && (
                     <div className="flex items-center gap-2">
                       <Link to={`/novel/${novelId}/addchapter`} className="flex items-center gap-2 px-4 py-2 glass rounded-xl text-emerald-500 hover:bg-emerald-500/10 transition-all font-bold text-sm">
                         <PlusCircle className="w-4 h-4" />
@@ -140,9 +140,11 @@ const Info = () => {
                       <Link to={`/updatenovel/${novelId}`} className="p-2 glass rounded-xl text-primary hover:bg-primary/10 transition-colors">
                         <Edit3 className="w-5 h-5" />
                       </Link>
-                      <button onClick={() => setIsModalOpen(true)} className="p-2 glass rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors">
-                        <Trash2 className="w-5 h-5" />
-                      </button>
+                      {ctx?.user?.role === "admin" && (
+                        <button onClick={() => setIsModalOpen(true)} className="p-2 glass rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors">
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -166,7 +168,7 @@ const Info = () => {
                 <p className="font-bold text-sm truncate">{novel?.author}</p>
               </GlassCard>
               <GlassCard className="p-4 space-y-1">
-                <div className="flex items-center gap-2 text-violet-500">
+                <div className="flex items-center gap-2 text-sage-500">
                   <Globe className="w-4 h-4" />
                   <span className="text-[10px] uppercase font-bold tracking-wider">اللغة</span>
                 </div>

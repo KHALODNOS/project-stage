@@ -124,13 +124,13 @@ const ProfilePage: React.FC = () => {
                                     <span className="text-3xl font-bold">{isContributor ? userData.ChaptersCreated.length : userData.favorite.length}</span>
                                     <span className="text-xs text-muted-foreground">{isContributor ? 'فصل منشأ' : 'رواية مفضلة'}</span>
                                 </GlassCard>
-                                <GlassCard className="flex flex-col items-center justify-center gap-2 bg-violet-500/5 hover:bg-violet-500/10 border-transparent">
-                                    <History className="w-8 h-8 text-violet-500" />
+                                <GlassCard className="flex flex-col items-center justify-center gap-2 bg-sage-500/5 hover:bg-sage-500/10 border-transparent">
+                                    <History className="w-8 h-8 text-sage-500" />
                                     <span className="text-3xl font-bold">{userData.Lastview.length}</span>
                                     <span className="text-xs text-muted-foreground">فصل مقروء أخيراً</span>
                                 </GlassCard>
-                                <GlassCard className="hidden md:flex flex-col items-center justify-center gap-2 bg-emerald-500/5 hover:bg-emerald-500/10 border-transparent">
-                                    <Layout className="w-8 h-8 text-emerald-500" />
+                                <GlassCard className="hidden md:flex flex-col items-center justify-center gap-2 bg-sage-600/5 hover:bg-sage-600/10 border-transparent">
+                                    <Layout className="w-8 h-8 text-sage-600" />
                                     <span className="text-3xl font-bold">{isContributor ? userData.NovelsCreated.length : '12'}</span>
                                     <span className="text-xs text-muted-foreground">{isContributor ? 'رواية منشأة' : 'مستوى القراءة'}</span>
                                 </GlassCard>
@@ -200,7 +200,7 @@ const ProfilePage: React.FC = () => {
                                             <p className="text-xs text-muted-foreground">تاريخ الإنشاء: {novel.createdAt ? new Date(novel.createdAt).toLocaleDateString() : 'غير معروف'}</p>
                                             <div className="flex gap-2">
                                                 <Link to={`/updatenovel/${novel._id}`} className="text-[10px] text-primary hover:underline">تعديل</Link>
-                                                <Link to={`/novel/${novel._id}/addchapter`} className="text-[10px] text-emerald-500 hover:underline">إضافة فصل</Link>
+                                                <Link to={`/novel/${novel._id}/addchapter`} className="text-[10px] text-sage-500 hover:underline">إضافة فصل</Link>
                                             </div>
                                         </div>
                                     </GlassCard>
@@ -213,7 +213,7 @@ const ProfilePage: React.FC = () => {
                 {/* Reading History */}
                 <section className="space-y-8">
                     <h3 className="text-2xl font-bold font-elmessiri flex items-center gap-2 border-b border-white/10 pb-4">
-                        <History className="text-violet-500" />
+                        <History className="text-sage-500" />
                         سجل القراءة الأخير
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

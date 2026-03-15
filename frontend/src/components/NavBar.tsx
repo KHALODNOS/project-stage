@@ -113,7 +113,7 @@ const NavBar = () => {
             <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
                 {/* Right Side: Navigation & Logo */}
                 <div className="flex items-center gap-6" dir="rtl">
-                    <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-primary to-violet-500 bg-clip-text text-transparent">
+                    <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-sage-500 to-sage-800 bg-clip-text text-transparent">
                         ROMAN
                     </Link>
 
@@ -183,7 +183,7 @@ const NavBar = () => {
                         className="p-2 glass rounded-xl hover:bg-white/20 transition-colors"
                         aria-label="Toggle theme"
                     >
-                        {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-indigo-400" />}
+                        {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-sage-500" />}
                     </button>
 
                     {/* Profile */}
