@@ -5,9 +5,9 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const Sequence = require("../models/increase");
 const {
-  deleteImageFromFirebase,
-  uploadImageToFirebase,
-} = require("../config/firebase");
+  deleteImage,
+  uploadImage,
+} = require("../config/storage");
 const { authorize, authenticate } = require("../middleware/middleware");
 const multer = require("multer");
 const generateOTP = require("../utils/generateOTP");
@@ -190,10 +190,10 @@ router.post("/register/step4-photo", upload.single("profileImage"), async (req, 
       return res.status(404).json({ message: "User not found" });
     }
 
-    let imageUrl = "https://firebasestorage.googleapis.com/v0/b/webnovels-6526c.appspot.com/o/users%2Fimages.png?alt=media&token=91c60f23-2201-4d5f-baa7-5332803c8f64";
+    let imageUrl = "users/images.png";
     if (req.file) {
-      imageUrl = await uploadImageToFirebase(req.file, "users");
-      console.log(`Uploaded image to Firebase: ${imageUrl}`);
+      imageUrl = await uploadImage(req.file, "users");
+      console.log(`Uploaded image: ${imageUrl}`);
     }
 
     user.image = imageUrl;

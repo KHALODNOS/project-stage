@@ -1,8 +1,13 @@
 const path = require('path');
 const fs = require('fs');
 
-const uploadImageToFirebase = async (file, folder = '') => {
-  // Fallback to storing locally since Firebase credentials are an issue
+/**
+ * Uploads an image to local storage.
+ * @param {Object} file - The file object from multer (multer.memoryStorage()).
+ * @param {string} folder - The subfolder to store the image in.
+ * @returns {Promise<string>} - The relative path of the saved file.
+ */
+const uploadImage = async (file, folder = '') => {
   const uploadDir = path.join(__dirname, '..', 'uploads', folder);
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
@@ -17,21 +22,23 @@ const uploadImageToFirebase = async (file, folder = '') => {
   return folder ? `${folder}/${fileName}` : fileName;
 };
 
-const deleteImageFromFirebase = async (imageUrl) => {
+/**
+ * Deletes an image from local storage.
+ * @param {string} imageUrl - The relative path or URL of the image.
+ */
+const deleteImage = async (imageUrl) => {
   try {
-    // Check if it's a local file format and try to delete it
+    // Only handle local paths (non-absolute URLs)
     if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
       const filePath = path.join(__dirname, '..', 'uploads', imageUrl);
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
         console.log(`Successfully deleted local file: ${filePath}`);
       }
-    } else {
-        console.log(`Cannot delete Firebase file as credentials are invalid: ${imageUrl}`);
     }
   } catch (error) {
     console.error('Error deleting local file:', error);
   }
 };
 
-module.exports = { deleteImageFromFirebase, uploadImageToFirebase };
+module.exports = { deleteImage, uploadImage };

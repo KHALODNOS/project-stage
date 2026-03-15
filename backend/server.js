@@ -133,7 +133,6 @@ app.use("/getnovels", getnovels);
 
 // CRUD operations for chapters
 app.use("/chapters", chapterRoutes);
-app.use("/getnovels", getnovels);
 
 // CRUD operations for chapters
 app.use("/search", searchRoutes);

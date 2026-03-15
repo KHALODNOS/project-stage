@@ -56,10 +56,10 @@ exports.getChapter = async (req, res) => {
 
 exports.addChapter = async (req, res) => {
   try {
-    const novel = await novel.findById(req.params.novelId);
-    if (!novel) return res.status(404).send({ message: "Novel not found" });
+    const targetNovel = await Novel.findById(req.params.novelId);
+    if (!targetNovel) return res.status(404).send({ message: "Novel not found" });
 
-    const chapter = new chapter({
+    const chapter = new Chapter({
       ...req.body,
       novelId: req.params.novelId,
       translators: [req.user.username],
@@ -84,24 +84,31 @@ exports.addChapter = async (req, res) => {
     console.log("Chunks with embeddings inserted");
 
     // Update novel
-    novel.chapter_info.numberOfChapters += 1;
-    novel.chapter_info.lastThreeChapters.unshift({
+    targetNovel.chapter_info.numberOfChapters += 1;
+    targetNovel.chapter_info.lastThreeChapters.unshift({
       chapterNumber: chapter.chapterNumber,
       chapterId: chapter._id.toString(),
       createdAt: Date.now(),
     });
-    if (novel.chapter_info.lastThreeChapters.length > 3) {
-      novel.chapter_info.lastThreeChapters.pop();
+    if (targetNovel.chapter_info.lastThreeChapters.length > 3) {
+      targetNovel.chapter_info.lastThreeChapters.pop();
     }
-    await novel.save();
+    
+    // Add translator to novel's translators list if not already there
+    if (!targetNovel.translators.includes(req.user.username)) {
+      targetNovel.translators.push(req.user.username);
+    }
+
+    await targetNovel.save();
     console.log("Novel updated");
 
     // Update user
     const user = req.user;
     await User.findByIdAndUpdate(user._id, {
       $push: { ChaptersCreated: chapter._id },
+      $addToSet: { NovelsCreated: targetNovel._id }
     });
-    console.log("Chapter added to user's ChaptersCreated");
+    console.log("Chapter and Novel added to user's tracking");
 
     res.status(201).send(chapter);
   } catch (error) {

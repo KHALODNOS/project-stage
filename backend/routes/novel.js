@@ -12,10 +12,6 @@ const {
 } = require("../controller/NovelController");
 const router = express.Router();
 
-// const {
-//   deleteImageFromFirebase,
-//   uploadImageToFirebase,
-// } = require('../config/firebase')
 // Make sure to install moment.js: npm install moment
 
 const upload = multer({
@@ -45,7 +41,7 @@ router.post(
 router.put(
   "/:id",
   authenticate,
-  authorize(["admin"]),
+  authorize(["admin", "translator"]),
   upload.single("image"),
   editNovel,
 );

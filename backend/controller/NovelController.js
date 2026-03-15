@@ -1,11 +1,9 @@
 const Novel = require("../models/novel");
 const Chapter = require("../models/chapter");
-const User = require("../models/user"); // Adjust the path as needed
-const moment = require("moment");
-
 
 const User = require("../models/user"); // Adjust the path as needed
 const moment = require("moment"); // Make sure to install moment.js: npm install moment
+const { uploadImage, deleteImage } = require("../config/storage");
 
 const generateUniqueId = async () => {
   let unique = false;
@@ -22,7 +20,7 @@ const generateUniqueId = async () => {
 
 exports.allNovels = async (req, res) => {
   try {
-    const novels = await novel.find();
+    const novels = await Novel.find();
     res.send(novels);
   } catch (error) {
     res.status(500).send(error);
@@ -105,13 +103,10 @@ exports.addNovel = async (req, res) => {
         );
     }
 
-    // const imageUrl = req.file
-    //   ? await uploadImageToFirebase(req.file, "novels")
-    //   : "";
-
-    // if (!imageUrl) {
-    //   return res.status(400).send("imagenovel are required");
-    // }
+    let imageUrl = "";
+    if (req.file) {
+      imageUrl = await uploadImage(req.file, "novels");
+    }
 
     // Check if genres is a string (JSON string) and parse it if necessary
     if (typeof genres === "string") {
@@ -195,17 +190,17 @@ exports.editNovel = async (req, res) => {
       parsedGenres = JSON.parse(genres);
     }
 
-    // // Remove the old image if a new one is uploaded
-    // if (req.file) {
-    //   if (
-    //     novel.image &&
-    //     novel.image.startsWith("https://storage.googleapis.com")
-    //   ) {
-    //     await deleteImageFromFirebase(novel.image);
-    //   }
-    //   const imageUrl = await uploadImageToFirebase(req.file, "novels");
-    //   novel.image = imageUrl;
-    // }
+    // Remove the old image if a new one is uploaded
+    if (req.file) {
+      if (
+        novel.image &&
+        !novel.image.startsWith("http")
+      ) {
+        await deleteImage(novel.image);
+      }
+      const imageUrl = await uploadImage(req.file, "novels");
+      novel.image = imageUrl;
+    }
 
     // Update novel fields
     novel.customId = customId || novel.customId;
@@ -248,9 +243,9 @@ exports.deleteNovel = async (req, res) => {
     // Remove the old image
     if (
       novel.image &&
-      novel.image.startsWith("https://storage.googleapis.com")
+      !novel.image.startsWith("http")
     ) {
-      await deleteImageFromFirebase(novel.image);
+      await deleteImage(novel.image);
     }
 
     await Novel.findByIdAndDelete(novelId);
