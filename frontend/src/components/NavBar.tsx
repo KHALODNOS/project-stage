@@ -13,8 +13,12 @@ import {
     Video,
     PlusCircle,
     Menu,
-    X
+    X,
+    Bell
 } from 'lucide-react';
+import { io, Socket } from 'socket.io-client';
+import { apiUrl } from '../utils/constvar';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthContext } from '../store/context';
 import useHttp from '../hooks/usehttp';
@@ -39,6 +43,13 @@ const NavBar = () => {
 
     const profileRef = useRef<HTMLDivElement>(null);
     const searchRef = useRef<HTMLDivElement>(null);
+    const notificationRef = useRef<HTMLDivElement>(null);
+
+    const [notifications, setNotifications] = useState<any[]>([]);
+    const [isOpenNotifications, setIsOpenNotifications] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const socketRef = useRef<Socket | null>(null);
+
 
     useEffect(() => {
         const handleScroll = () => {
@@ -57,6 +68,9 @@ const NavBar = () => {
                 setSearchResults([]);
                 setSearchQuery('');
             }
+            if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+                setIsOpenNotifications(false);
+            }
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -74,10 +88,55 @@ const NavBar = () => {
             setNovelId('');
         }
         setIsOpenProfile(false);
+        setIsOpenNotifications(false);
         setSearchResults([]);
         setSearchQuery('');
         setIsOpenMenu(false);
     }, [pathname]);
+
+    // Notifications Logic
+    useEffect(() => {
+        if (ctx?.token) {
+            // Fetch initial notifications
+            sendData<any[]>('/notifications', { method: 'GET' }, (data) => {
+                if (data) {
+                    setNotifications(data);
+                    // For now, let's assume all fetched are unread or just count them
+                    setUnreadCount(data.length > 0 ? data.length : 0);
+                }
+            }, undefined, true);
+
+            // Socket setup
+            const socket = io(apiUrl, {
+                auth: { token: ctx.token },
+                transports: ["websocket", "polling"],
+            });
+            socketRef.current = socket;
+
+            socket.on('connect', () => {
+                console.log('Connected to socket for notifications');
+                // Join role-based room
+                socket.emit('join', ctx.user?.role);
+                // Join user-specific room for private notifications
+                const userId = (ctx.user as any)?._id || ctx.user?.id;
+                if (userId) socket.emit('join', userId.toString());
+            });
+
+            socket.on('newNotification', (notif: any) => {
+                const myId = (ctx.user as any)?._id || ctx.user?.id;
+                if (notif.sender !== myId.toString()) {
+                    setNotifications(prev => [notif, ...prev]);
+                    setUnreadCount(prev => prev + 1);
+                }
+            });
+
+            return () => {
+                socket.disconnect();
+                socketRef.current = null;
+            };
+        }
+    }, [ctx?.token, ctx?.user?.role]);
+
 
     const handleDarkModeToggle = () => {
         const newMode = !isDarkMode;
@@ -185,6 +244,62 @@ const NavBar = () => {
                     >
                         {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-sage-500" />}
                     </button>
+
+                    {/* Notifications */}
+                    {ctx?.token && (
+                        <div className="relative" ref={notificationRef}>
+                            <button
+                                onClick={() => {
+                                    setIsOpenNotifications(!isOpenNotifications);
+                                    if (!isOpenNotifications) setUnreadCount(0);
+                                }}
+                                className="p-2 glass rounded-xl hover:bg-white/20 transition-colors relative"
+                                aria-label="Notifications"
+                            >
+                                <Bell className="w-5 h-5 text-foreground/70" />
+                                {unreadCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-background animate-pulse">
+                                        {unreadCount}
+                                    </span>
+                                )}
+                            </button>
+
+                            <AnimatePresence>
+                                {isOpenNotifications && (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                                        className="absolute right-0 mt-3 w-72 glass rounded-2xl shadow-2xl py-3 overflow-hidden z-50 border border-white/10"
+                                        dir="rtl"
+                                    >
+                                        <div className="px-4 pb-2 mb-2 border-b border-white/10 flex justify-between items-center">
+                                            <span className="text-sm font-bold font-elmessiri">الاشعارات</span>
+                                            <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-wider">{notifications.length} تنبيه</span>
+                                        </div>
+                                        <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+                                            {notifications.length === 0 ? (
+                                                <div className="py-8 text-center text-foreground/30 flex flex-col items-center gap-2">
+                                                    <Bell className="w-8 h-8 opacity-20" />
+                                                    <p className="text-xs">لا توجد اشعارات حتى الآن</p>
+                                                </div>
+                                            ) : (
+                                                notifications.map((notif, idx) => (
+                                                    <div key={idx} className="px-4 py-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 group cursor-default">
+                                                        <p className="text-xs text-foreground/80 leading-relaxed">{notif.message}</p>
+                                                        <span className="text-[9px] text-foreground/30 mt-1 block">
+                                                            {new Date(notif.createdAt).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
+                                                        </span>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    )}
+
 
                     {/* Profile */}
                     {ctx?.token ? (
