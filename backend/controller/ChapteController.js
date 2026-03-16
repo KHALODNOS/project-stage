@@ -4,6 +4,7 @@ const User = require("../models/user"); // Adjust the path as needed
 const ChapterChunk = require("../models/chapterChunk");
 const { splitIntoChunks } = require("../utils/chunkText");
 const { getEmbeddings } = require("../utils/embedding");
+const Notification = require("../models/notification");
 
 exports.allChapters = async (req, res) => {
   try {
@@ -57,7 +58,8 @@ exports.getChapter = async (req, res) => {
 exports.addChapter = async (req, res) => {
   try {
     const targetNovel = await Novel.findById(req.params.novelId);
-    if (!targetNovel) return res.status(404).send({ message: "Novel not found" });
+    if (!targetNovel)
+      return res.status(404).send({ message: "Novel not found" });
 
     const chapter = new Chapter({
       ...req.body,
@@ -66,6 +68,15 @@ exports.addChapter = async (req, res) => {
     });
     await chapter.save();
     console.log("Chapter is saved");
+
+    const notif = await Notification.create({
+      message: `قام ${req.user.role} بنشر فصل جديد من رواية ${targetNovel.title}`,
+      toggleRole: ["user"],
+    });
+
+    const io = require("../socket").getIO();
+    io.to("user").emit("newNotification", notif);
+
 
     // Split + embed
     const chunks = splitIntoChunks(chapter.content);
@@ -93,7 +104,7 @@ exports.addChapter = async (req, res) => {
     if (targetNovel.chapter_info.lastThreeChapters.length > 3) {
       targetNovel.chapter_info.lastThreeChapters.pop();
     }
-    
+
     // Add translator to novel's translators list if not already there
     if (!targetNovel.translators.includes(req.user.username)) {
       targetNovel.translators.push(req.user.username);
@@ -106,7 +117,7 @@ exports.addChapter = async (req, res) => {
     const user = req.user;
     await User.findByIdAndUpdate(user._id, {
       $push: { ChaptersCreated: chapter._id },
-      $addToSet: { NovelsCreated: targetNovel._id }
+      $addToSet: { NovelsCreated: targetNovel._id },
     });
     console.log("Chapter and Novel added to user's tracking");
 

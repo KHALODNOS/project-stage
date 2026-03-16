@@ -27,11 +27,9 @@ const app = express();
 const server = http.createServer(app);
 const port = 3500;
 
-const io = new Server(server, {
-  cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174"],
-  },
-});
+const socketIo = require("./socket");
+const io = socketIo.init(server);
+
 
 let onlineUsers = [];
 
@@ -142,6 +140,10 @@ app.use("/", messageRoutes);
 
 // Video
 app.use("/video", videoRoutes);
+
+// Notification
+app.use("/notifications", require("./routes/notification"));
+
 
 // 404 Handler - Return JSON instead of default HTML
 app.use((req, res, next) => {

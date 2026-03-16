@@ -4,6 +4,7 @@ const Chapter = require("../models/chapter");
 const User = require("../models/user"); // Adjust the path as needed
 const moment = require("moment"); // Make sure to install moment.js: npm install moment
 const { uploadImage, deleteImage } = require("../config/storage");
+const Notification = require("../models/notification");
 
 const generateUniqueId = async () => {
   let unique = false;
@@ -133,6 +134,17 @@ exports.addNovel = async (req, res) => {
     });
     await novel.save();
 
+    // create a notification of created Nouvel
+    const notif = await Notification.create({
+      message: `نشر المسؤول رواية جديدة بعنوان 
+      ${title}`,
+      toggleRole: ["user", "translator"],
+    });
+
+    const io = require("../socket").getIO();
+    io.to("user").emit("newNotification", notif);
+    io.to("translator").emit("newNotification", notif);
+
     const user = req.user;
     // Add novel to user's NovelsCreated field
     user.NovelsCreated.push(novel._id);
@@ -192,10 +204,7 @@ exports.editNovel = async (req, res) => {
 
     // Remove the old image if a new one is uploaded
     if (req.file) {
-      if (
-        novel.image &&
-        !novel.image.startsWith("http")
-      ) {
+      if (novel.image && !novel.image.startsWith("http")) {
         await deleteImage(novel.image);
       }
       const imageUrl = await uploadImage(req.file, "novels");
@@ -226,6 +235,17 @@ exports.editNovel = async (req, res) => {
     novel.image = novel.image;
 
     await novel.save();
+
+    // update nouvel notification
+    const notif = await Notification.create({
+      message: `حدث المسؤول رواية  بعنوان 
+      ${title}`,
+      toggleRole: ["user", "translator"],
+    });
+
+    const io = require("../socket").getIO();
+    io.to("user").emit("newNotification", notif);
+    io.to("translator").emit("newNotification", notif);
     res.status(200).send(novel);
   } catch (error) {
     res.status(400).send(error);
@@ -241,10 +261,7 @@ exports.deleteNovel = async (req, res) => {
     }
 
     // Remove the old image
-    if (
-      novel.image &&
-      !novel.image.startsWith("http")
-    ) {
+    if (novel.image && !novel.image.startsWith("http")) {
       await deleteImage(novel.image);
     }
 

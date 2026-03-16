@@ -56,8 +56,7 @@ router.delete('/favorite/:novelId',authenticate, async (req, res) => {
     user.favorite = user.favorite.filter(id => id.toString() !== novelId);
     await User.findByIdAndUpdate(user._id, { favorite: user.favorite });
 
- 
-  
+
       res.json({ message: 'Novel removed from favorites',user:user });
     } catch (error) {
       console.error(error);
