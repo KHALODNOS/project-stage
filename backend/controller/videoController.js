@@ -22,9 +22,9 @@ exports.uploadVideo = async (req, res) => {
 
     // notify all roles about the new video
     const notif = await notification.create({
-        message: `قام ${req.user.username} بنشر فيديو جديد`,
-        toggleRole: ["admin", "user", "translator"],
-        sender: userId
+      message: `قام ${req.user.username} بنشر فيديو جديد`,
+      toggleRole: ["admin", "user", "translator"],
+      sender: userId
     });
 
     const io = require("../socket").getIO();
@@ -98,13 +98,13 @@ exports.likeVideo = async (req, res) => {
     const io = require("../socket").getIO();
 
     // Notify Admins (Only if the liker is not an admin)
-    if (req.user.role !== "admin") {
-      const adminNotif = await notification.create({
-        message: `قام ${req.user.username} بالإعجاب بفيديو`,
-        toggleRole: ["admin"],
-      });
-      io.to("admin").emit("newNotification", adminNotif);
-    }
+    // if (req.user.role !== "admin") {
+    //   const adminNotif = await notification.create({
+    //     message: `قام ${req.user.username} بالإعجاب بفيديو`,
+    //     toggleRole: ["admin"],
+    //   });
+    //   io.to("admin").emit("newNotification", adminNotif);
+    // }
 
     // Notify the video owner if it's not the owner themselves liking
     if (video.user.toString() !== userId.toString()) {

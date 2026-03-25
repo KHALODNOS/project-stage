@@ -4,10 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const Sequence = require("../models/increase");
-const {
-  deleteImage,
-  uploadImage,
-} = require("../config/storage");
+const { deleteImage, uploadImage } = require("../config/storage");
 const { authorize, authenticate } = require("../middleware/middleware");
 const multer = require("multer");
 const generateOTP = require("../utils/generateOTP");
@@ -61,7 +58,9 @@ router.post("/register/step1", async (req, res) => {
     console.log("Step 1 Request Body:", { email, hasPassword: !!password });
 
     if (!email || !password) {
-      return res.status(400).send({ message: "Email and password are required" });
+      return res
+        .status(400)
+        .send({ message: "Email and password are required" });
     }
 
     const existingUser = await User.findOne({ email });
@@ -180,40 +179,52 @@ router.post("/register/verify-phone", async (req, res) => {
 });
 
 // Step 4: Upload Profile Photo
-router.post("/register/step4-photo", upload.single("profileImage"), async (req, res) => {
-  try {
-    const { email } = req.body;
-    console.log(`Step 4 Photo Upload for: ${email}`);
-    const user = await User.findOne({ email });
+router.post(
+  "/register/step4-photo",
+  upload.single("profileImage"),
+  async (req, res) => {
+    try {
+      const { email } = req.body;
+      console.log(`Step 4 Photo Upload for: ${email}`);
+      const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      let imageUrl = "users/images.png";
+      if (req.file) {
+        imageUrl = await uploadImage(req.file, "users");
+        console.log(`Uploaded image: ${imageUrl}`);
+      }
+
+      user.image = imageUrl;
+      user.registrationStep = 5;
+      await user.save();
+
+      res.json({ message: "Profile photo uploaded", imageUrl });
+    } catch (error) {
+      console.error("Step 4 Photo Error:", error);
+      if (
+        error instanceof multer.MulterError &&
+        error.code === "LIMIT_FILE_SIZE"
+      ) {
+        return res
+          .status(400)
+          .json({ message: "File size too large. Max size is 1 MB." });
+      }
+      res
+        .status(500)
+        .json({ message: error.message || "Internal Server Error" });
     }
-
-    let imageUrl = "users/images.png";
-    if (req.file) {
-      imageUrl = await uploadImage(req.file, "users");
-      console.log(`Uploaded image: ${imageUrl}`);
-    }
-
-    user.image = imageUrl;
-    user.registrationStep = 5;
-    await user.save();
-
-    res.json({ message: "Profile photo uploaded", imageUrl });
-  } catch (error) {
-    console.error("Step 4 Photo Error:", error);
-    if (error instanceof multer.MulterError && error.code === "LIMIT_FILE_SIZE") {
-      return res.status(400).json({ message: "File size too large. Max size is 1 MB." });
-    }
-    res.status(500).json({ message: error.message || "Internal Server Error" });
-  }
-});
+  },
+);
 
 // Step 5: Complete Profile
 router.post("/register/complete", async (req, res) => {
   try {
-    const { email, username, nickname, bio, birthday, adress, city, age } = req.body;
+    const { email, username, nickname, bio, birthday, adress, city, age } =
+      req.body;
     console.log(`Completing profile for: ${email}, username: ${username}`);
     const user = await User.findOne({ email });
 
@@ -224,7 +235,7 @@ router.post("/register/complete", async (req, res) => {
     // Set role for the first user
     const userCount = await User.countDocuments();
     if (userCount <= 1) {
-      user.role = 'admin';
+      user.role = "admin";
     }
 
     user.username = username;

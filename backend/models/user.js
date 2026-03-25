@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema({
   Lastview: [
     {
       chapterNumber: Number,
+      scrollPosition: { type: Number, default: 0 },
       novel: { type: mongoose.Schema.Types.ObjectId, ref: "Novel" },
     },
   ],
