@@ -13,7 +13,8 @@ import {
   Clock,
   Layout,
   MousePointer2,
-  ChevronUp
+  ChevronUp,
+  Bookmark
 } from 'lucide-react';
 import useHttp from "../hooks/usehttp";
 import { Chapter } from "../utils/types";
@@ -46,7 +47,8 @@ const ChapterContent = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   const [lastViewedChapter, setLastViewedChapter] = useState<number | null>(null);
-  const [hasUpdatedLastViewed, setHasUpdatedLastViewed] = useState(false);
+  const [savedScrollPosition, setSavedScrollPosition] = useState<number>(0);
+  const [hasRestoredScroll, setHasRestoredScroll] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const ctx = useContext(AuthContext);
@@ -80,51 +82,75 @@ const ChapterContent = () => {
 
   useEffect(() => {
     fetchChapter();
-    setHasUpdatedLastViewed(false);
   }, [fetchChapter]);
 
   useEffect(() => {
     if (ctx?.token) {
-      sendData<{ lastViewedChapter: number | null }>(
+      sendData<{ lastViewedChapter: number | null, scrollPosition: number }>(
         `/users/lastViewedChapter/${novelId}`,
         { method: 'GET' },
-        (data) => setLastViewedChapter(data?.lastViewedChapter as number | null),
+        (data) => {
+            setLastViewedChapter(data?.lastViewedChapter as number | null);
+            setSavedScrollPosition(data?.scrollPosition || 0);
+        },
         undefined, true
       );
     }
   }, [sendData, novelId, ctx?.token]);
 
-  const updateLastViewedChapter = async (newChapterNumber: number, confirmed?: boolean) => {
-    if (!ctx?.token || hasUpdatedLastViewed || !newChapterNumber) return;
+  const updateLastViewedChapter = async (newChapterNumber: number, confirmed?: boolean, scrollPos: number = 0) => {
+    if (!ctx?.token || !newChapterNumber) return;
 
-    if (lastViewedChapter === null || newChapterNumber > lastViewedChapter || confirmed) {
+    if (lastViewedChapter === null || newChapterNumber > lastViewedChapter || confirmed || scrollPos > 0) {
       try {
-        setHasUpdatedLastViewed(true);
         await sendData(
           `/users/lastViewedChapter/${novelId}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chapterNumber: newChapterNumber }),
+            body: JSON.stringify({ chapterNumber: newChapterNumber, scrollPosition: scrollPos }),
           },
-          () => setLastViewedChapter(newChapterNumber),
+          () => {
+              setLastViewedChapter(newChapterNumber);
+              if (scrollPos > 0) setSavedScrollPosition(scrollPos);
+          },
           undefined, true
         );
-        toast?.addToast("نجاح", "success", `تم تحديث تقدمك للفصل ${newChapterNumber}`);
+        if (scrollPos > 0) {
+            toast?.addToast("تم الحفظ", "success", "تم حفظ مكان توقفك بنجاح");
+        } else {
+            toast?.addToast("نجاح", "success", `تم تحديث تقدمك للفصل ${newChapterNumber}`);
+        }
       } catch (error) {
-        setHasUpdatedLastViewed(false);
+        // Error handled by useHttp
       }
     } else if (lastViewedChapter !== newChapterNumber) {
       setShowConfirmModal(true);
     }
   };
 
+  const handleBookmark = () => {
+      const scrollPos = window.scrollY / (document.body.offsetHeight - window.innerHeight);
+      if (chapter?.chapterNumber) {
+          updateLastViewedChapter(chapter.chapterNumber, true, scrollPos);
+      }
+  };
+
+  useEffect(() => {
+      if (savedScrollPosition > 0 && !hasRestoredScroll && chapter?.chapterNumber === lastViewedChapter) {
+          const timeout = setTimeout(() => {
+              const targetY = savedScrollPosition * (document.body.offsetHeight - window.innerHeight);
+              window.scrollTo({ top: targetY, behavior: 'smooth' });
+              setHasRestoredScroll(true);
+              toast?.addToast("مرحباً بك مجدداً", "success", "تمت استعادة مكان توقفك الأخير");
+          }, 1000);
+          return () => clearTimeout(timeout);
+      }
+  }, [savedScrollPosition, hasRestoredScroll, chapter, lastViewedChapter, toast]);
+
   const handleScroll = useCallback(() => {
     setShowScrollTop(window.scrollY > 1000);
-    if (!ctx?.token || hasUpdatedLastViewed || !chapter?.chapterNumber) return;
-    const progress = (window.innerHeight + window.scrollY) / document.body.offsetHeight;
-    if (progress > 0.8) updateLastViewedChapter(chapter.chapterNumber);
-  }, [ctx?.token, hasUpdatedLastViewed, chapter]);
+  }, []);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -137,6 +163,12 @@ const ChapterContent = () => {
     return Math.ceil(words / 200);
   }, [chapter?.content]);
 
+  const isRTL = useMemo(() => {
+    if (!chapter?.content) return true;
+    const arabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\u0590-\u05FF]/;
+    return arabicRegex.test(chapter.content.slice(0, 500));
+  }, [chapter?.content]);
+
   const formatContent = (content: string) => {
     return content.split('\n').filter(p => p.trim()).map((paragraph, index) => (
       <motion.p
@@ -145,7 +177,10 @@ const ChapterContent = () => {
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.5, delay: index * 0.05 }}
         key={index}
-        className="mb-8 indent-8"
+        className={cn(
+            "mb-8",
+            isRTL ? "indent-8" : "indent-0"
+        )}
       >
         {paragraph}
       </motion.p>
@@ -165,7 +200,7 @@ const ChapterContent = () => {
       </div>
 
       {isLoading ? <div className="h-screen flex items-center justify-center"><Loader /></div> : (
-        <main className="max-w-3xl mx-auto px-6 py-20 md:py-32" dir="rtl">
+        <main className="max-w-3xl mx-auto px-6 py-20 md:py-32" dir={isRTL ? "rtl" : "ltr"}>
 
           {/* Enhanced Header */}
           <header className="mb-20 space-y-6">
@@ -198,48 +233,105 @@ const ChapterContent = () => {
 
           {/* Reader Core */}
           <article
-            className="reader-content leading-relaxed text-justify mb-24 transition-all duration-500"
+            className={cn(
+                "reader-content leading-relaxed mb-24 transition-all duration-500 relative",
+                isRTL ? "text-justify" : "text-left"
+            )}
             style={{
-              fontFamily: `${fontFamily}, serif`,
+              fontFamily: isRTL ? `${fontFamily}, serif` : 'inherit',
               fontSize: `${fontSize}px`,
               fontWeight,
               lineHeight
             }}
           >
             {chapter && formatContent(chapter.content)}
+            
+            {/* End of Chapter Mark */}
+            <motion.div 
+               initial={{ opacity: 0 }}
+               whileInView={{ opacity: 1 }}
+               className="flex flex-col items-center gap-6 mt-32 py-10"
+            >
+                <div className="w-16 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent rounded-full" />
+                <span className="text-zinc-600 font-elmessiri text-lg font-bold">انتهى الفصل {chapter?.chapterNumber}</span>
+                
+                <button 
+                  onClick={handleBookmark}
+                  className="flex items-center gap-3 px-8 py-4 glass rounded-full border-primary/20 hover:bg-primary/10 transition-all text-primary font-bold group"
+                >
+                    <Bookmark className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    ضع علامة هنا للعودة لاحقاً
+                </button>
+
+                <div className="flex gap-2">
+                    {[...Array(3)].map((_, i) => (
+                        <div key={i} className="w-2 h-2 rounded-full bg-primary/20" />
+                    ))}
+                </div>
+            </motion.div>
           </article>
 
-          {/* Premium Bottom Nav */}
-          <footer className="grid grid-cols-2 gap-4 mt-20 pt-12 border-t border-white/5">
-            <div className="group">
-              <span className="text-[10px] uppercase tracking-widest font-black text-zinc-600 mb-2 block mr-4">السابق</span>
-              {chapter?.prevChapterId ? (
-                <Link
-                  to={`/novel/${novelId}/${chapter.prevChapterId}`}
-                  className="flex items-center justify-between p-4 md:p-6 rounded-3xl glass hover:bg-white/10 transition-all border border-white/5 group-hover:-translate-y-1"
-                >
-                  <ChevronRight className="w-6 h-6 text-primary" />
-                  <span className="font-bold text-sm md:text-lg">الفصل السابق</span>
-                </Link>
-              ) : (
-                <div className="p-6 rounded-3xl glass opacity-20 border border-dashed border-white/20 text-center font-bold">البداية</div>
-              )}
+          {/* Premium Navigation Footer */}
+          <footer className="mt-20 space-y-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Previous Chapter */}
+              <div className="group">
+                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-zinc-600 mb-3 block mr-4">الفصل السابق</span>
+                {chapter?.prevChapterId ? (
+                  <Link
+                    to={`/novel/${novelId}/${chapter.prevChapterId}`}
+                    className="flex items-center justify-between p-6 rounded-[2.5rem] glass hover:bg-white/10 transition-all border border-white/5 hover:border-primary/20 hover:-translate-y-1 shadow-2xl"
+                  >
+                    <div className="p-3 bg-white/5 rounded-2xl group-hover:bg-primary/20 transition-colors">
+                        <ChevronRight className="w-6 h-6 text-primary" />
+                    </div>
+                    <div className="text-right">
+                        <span className="block text-xs text-zinc-500 font-bold mb-1">الرجوع إلى</span>
+                        <span className="font-bold text-lg md:text-xl">الفصل السابق</span>
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="p-8 rounded-[2.5rem] glass opacity-30 border border-dashed border-white/20 text-center font-bold flex items-center justify-center gap-3">
+                    <X className="w-5 h-5 opacity-20" /> البداية الأولى
+                  </div>
+                )}
+              </div>
+
+              {/* Next Chapter */}
+              <div className="group text-left">
+                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-zinc-600 mb-3 block ml-4">الفصل التالي</span>
+                {chapter?.nextChapterId ? (
+                  <Link
+                    to={`/novel/${novelId}/${chapter.nextChapterId}`}
+                    onClick={() => {
+                        if (chapter?.chapterNumber) updateLastViewedChapter(chapter.chapterNumber);
+                    }}
+                    className="flex items-center justify-between p-6 rounded-[2.5rem] bg-gradient-to-br from-primary to-emerald-600 text-white shadow-2xl shadow-primary/30 hover:shadow-primary/50 hover:scale-[1.02] active:scale-[0.98] transition-all hover:-translate-y-1"
+                  >
+                    <div className="text-left">
+                        <span className="block text-xs text-white/70 font-bold mb-1">الانتقال إلى</span>
+                        <span className="font-bold text-lg md:text-xl">الفصل التالي</span>
+                    </div>
+                    <div className="p-3 bg-white/20 rounded-2xl group-hover:bg-white/30 transition-colors">
+                        <ChevronLeft className="w-6 h-6" />
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="p-8 rounded-[2.5rem] glass opacity-30 border border-dashed border-white/20 text-center font-bold flex items-center justify-center gap-3">
+                    تمت قراءة الجميع <Settings className="w-5 h-5 opacity-20" />
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="group text-left">
-              <span className="text-[10px] uppercase tracking-widest font-black text-zinc-600 mb-2 block ml-4">التالي</span>
-              {chapter?.nextChapterId ? (
-                <Link
-                  to={`/novel/${novelId}/${chapter.nextChapterId}`}
-                  className="flex items-center justify-between p-4 md:p-6 rounded-3xl bg-primary text-white shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all group-hover:-translate-y-1"
-                >
-                  <span className="font-bold text-sm md:text-lg">الفصل التالي</span>
-                  <ChevronLeft className="w-6 h-6" />
-                </Link>
-              ) : (
-                <div className="p-6 rounded-3xl glass opacity-20 border border-dashed border-white/20 text-center font-bold text-left">النهاية</div>
-              )}
-            </div>
+            {/* Novel Info Shortcut */}
+            <Link 
+                to={`/novel/${novelId}`}
+                className="flex items-center justify-center gap-3 py-6 glass rounded-[2.5rem] border-white/5 hover:bg-white/5 transition-all group"
+            >
+                <BookOpen className="w-5 h-5 text-zinc-500 group-hover:text-primary transition-colors" />
+                <span className="text-sm font-bold text-zinc-500 group-hover:text-white transition-colors">العودة إلى فهرس الرواية الرئيسي</span>
+            </Link>
           </footer>
 
           {/* Floating Luxury Controls */}
@@ -254,6 +346,14 @@ const ChapterContent = () => {
                 title="وضع التركيز"
               >
                 {isFocusMode ? <Minimize2 className="w-6 h-6" /> : <Maximize2 className="w-6 h-6" />}
+              </button>
+
+              <button
+                onClick={handleBookmark}
+                className="p-4 glass rounded-2xl shadow-2xl hover:bg-white/10 transition-all text-emerald-400"
+                title="حفظ علامة التوقف"
+              >
+                <Bookmark className="w-6 h-6" />
               </button>
 
               <button

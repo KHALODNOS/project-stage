@@ -10,14 +10,12 @@ import {
   Hash,
   Sidebar as SidebarIcon,
   MessageSquare,
-  Circle,
   MoreVertical,
   Paperclip,
-  Plus,
-  X
+  Plus
 } from "lucide-react";
 import { AuthContext } from "../store/context";
-import { apiUrl, urlimage } from "../utils/constvar";
+import { apiUrl, getImageUrl } from "../utils/constvar";
 import { cn } from "../utils/cn";
 import Loader from "../components/Loader";
 
@@ -219,12 +217,12 @@ const Message: React.FC = () => {
                     onlineUsers.map((u) => (
                       <div key={u.socketId} className="flex items-center gap-3 p-3 rounded-2xl hover:bg-white/[0.03] transition-all group">
                         <div className="relative">
-                          <img
-                            src={u.image ? `${urlimage}/${u.image}` : avatarFallback(u.nickname)}
-                            alt={u.nickname}
-                            className="w-10 h-10 rounded-xl object-cover border border-white/10 group-hover:border-primary/50 transition-colors"
-                            onError={(e) => ((e.target as HTMLImageElement).src = avatarFallback(u.nickname))}
-                          />
+                            <img
+                              src={getImageUrl(u.image)}
+                              alt={u.nickname}
+                              className="w-10 h-10 rounded-xl object-cover border border-white/10 group-hover:border-primary/50 transition-colors"
+                              onError={(e) => ((e.target as HTMLImageElement).src = avatarFallback(u.nickname))}
+                            />
                           <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-[#0a0a0f] rounded-full" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -248,7 +246,7 @@ const Message: React.FC = () => {
             <div className="p-4 bg-white/[0.03] border-t border-white/5 flex items-center gap-3">
               <div className="relative">
                 <img
-                  src={user.image ? `${urlimage}/${user.image}` : avatarFallback(user.nickname)}
+                  src={getImageUrl(user.image)}
                   alt={user.nickname}
                   className="w-11 h-11 rounded-xl object-cover border-2 border-primary shadow-lg shadow-primary/20"
                   onError={(e) => ((e.target as HTMLImageElement).src = avatarFallback(user.nickname))}
@@ -311,7 +309,7 @@ const Message: React.FC = () => {
                   <div className="h-px bg-white/5 flex-1" />
                 </div>
 
-                {group.messages.map((m, idx) => {
+                {group.messages.map((m) => {
                   const isOwn = m.sender === myId;
                   const rm = ROLE_META[m.senderRole] || ROLE_META.user;
                   const reactionCounts = (m.reactions ?? []).reduce<Record<string, number>>((acc, r) => {
@@ -333,7 +331,7 @@ const Message: React.FC = () => {
                       {/* Avatar */}
                       {!isOwn && (
                         <img
-                          src={m.senderImage ? `${urlimage}/${m.senderImage}` : avatarFallback(m.senderNickname)}
+                          src={getImageUrl(m.senderImage)}
                           alt={m.senderNickname}
                           className="w-10 h-10 rounded-2xl object-cover border border-white/10 shrink-0"
                           onError={(e) => ((e.target as HTMLImageElement).src = avatarFallback(m.senderNickname))}

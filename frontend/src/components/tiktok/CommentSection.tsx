@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { AuthContext } from '../../store/context';
 import { FaTimes, FaPaperPlane } from 'react-icons/fa';
-import { apiUrl, urlimage } from '../../utils/constvar';
+import { apiUrl, getImageUrl, urlimage } from '../../utils/constvar';
 
 interface CommentSectionProps {
     videoId: string;
@@ -68,7 +68,7 @@ const CommentSection = ({ videoId, comments, onClose, onCommentAdded }: CommentS
                         comments.map((comment, idx) => (
                             <div key={idx} className="flex gap-3">
                                 <div className="w-10 h-10 rounded-full bg-gray-800 overflow-hidden flex-shrink-0">
-                                    <img src={comment.user?.image ? comment.user.image : `${urlimage}/images.png`}
+                                    <img src={getImageUrl(comment.user?.image ? comment.user.image : `${urlimage}/images.png`)}
                                         alt="user"
                                         className="w-full h-full object-cover"
                                         onError={(e) => { (e.target as HTMLImageElement).src = '/images.png'; }} />

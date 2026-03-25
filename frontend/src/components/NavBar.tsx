@@ -137,6 +137,13 @@ const NavBar = () => {
         }
     }, [ctx?.token, ctx?.user?.role]);
 
+    const handleDeleteAllNotifications = () => {
+        sendData('/notifications', { method: 'DELETE' }, () => {
+            setNotifications([]);
+            setUnreadCount(0);
+        }, undefined, true);
+    };
+
 
     const handleDarkModeToggle = () => {
         const newMode = !isDarkMode;
@@ -173,7 +180,7 @@ const NavBar = () => {
                 {/* Right Side: Navigation & Logo */}
                 <div className="flex items-center gap-6" dir="rtl">
                     <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-sage-500 to-sage-800 bg-clip-text text-transparent">
-                        ROMAN
+                        اقرأ
                     </Link>
 
                     <div className="hidden md:flex items-center gap-4">
@@ -274,8 +281,21 @@ const NavBar = () => {
                                         dir="rtl"
                                     >
                                         <div className="px-4 pb-2 mb-2 border-b border-white/10 flex justify-between items-center">
-                                            <span className="text-sm font-bold font-elmessiri">الاشعارات</span>
-                                            <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-wider">{notifications.length} تنبيه</span>
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-bold font-elmessiri">الاشعارات</span>
+                                                <span className="text-[9px] text-foreground/40 font-bold uppercase tracking-wider">{notifications.length} تنبيه</span>
+                                            </div>
+                                            {notifications.length > 0 && (
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDeleteAllNotifications();
+                                                    }}
+                                                    className="text-[10px] text-rose-500 hover:text-rose-600 font-bold transition-colors px-2 py-1 rounded-lg hover:bg-rose-500/10"
+                                                >
+                                                    حذف الكل
+                                                </button>
+                                            )}
                                         </div>
                                         <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
                                             {notifications.length === 0 ? (
@@ -310,7 +330,7 @@ const NavBar = () => {
                                 onClick={() => setIsOpenProfile(!isOpenProfile)}
                                 className="flex items-center gap-2 glass p-1 pl-3 rounded-xl hover:bg-white/20 transition-colors"
                             >
-                                <img src={`${ctx?.user?.image}`} alt="Profile" className="w-8 h-8 rounded-lg object-cover shadow-Inner" />
+                                <img src={getImageUrl(ctx?.user?.image)} alt="Profile" className="w-8 h-8 rounded-lg object-cover shadow-Inner" />
                                 <span className="hidden lg:block text-sm font-semibold">{ctx?.user?.username}</span>
                             </motion.button>
 

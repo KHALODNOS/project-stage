@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useContext } from 'react';
 import { AuthContext } from '../../store/context';
 import { FaHeart, FaCommentDots, FaShare, FaTrash, FaMusic } from 'react-icons/fa';
 import CommentSection from './CommentSection';
-import { apiUrl, urlimage } from '../../utils/constvar';
+import { apiUrl, getImageUrl, urlimage } from '../../utils/constvar';
 
 interface VideoCardProps {
     video: any;
@@ -127,7 +127,7 @@ const VideoCard = ({ video, onStatsChange }: VideoCardProps) => {
             {/* Side Tools */}
             <div className="absolute bottom-20 left-4 flex flex-col gap-6 items-center">
                 <div className="w-12 h-12 rounded-full border-2 border-white overflow-hidden bg-gray-800">
-                    <img src={video.user?.image ? video.user.image : `${urlimage}/images.png`}
+                    <img src={getImageUrl(video.user?.image ? video.user.image : `${urlimage}/images.png`)}
                         alt="user"
                         className="w-full h-full object-cover"
                         onError={(e) => { (e.target as HTMLImageElement).src = '/images.png'; }} />

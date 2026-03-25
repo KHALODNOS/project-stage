@@ -20,6 +20,7 @@ import Loader from '../components/Loader';
 import { cn } from '../utils/cn';
 import { GlassCard } from '../components/ui/GlassCard';
 import { BentoGrid, BentoGridItem } from '../components/ui/BentoGrid';
+import { getImageUrl } from '../utils/constvar';
 
 const ProfilePage: React.FC = () => {
     const { username } = useParams<{ username: string }>();
@@ -56,7 +57,7 @@ const ProfilePage: React.FC = () => {
                     <div className="space-y-4">
                         <div className="flex items-center gap-2 text-primary font-mono text-sm tracking-widest">
                             <Shield className="w-4 h-4" />
-                            <span>SYSTEM_ACCESS: {userData.role.toUpperCase()}</span>
+                            <span>SYSTEM_ACCESS: {userData.role?.toUpperCase() || 'USER'}</span>
                         </div>
                         <h1 className="text-4xl md:text-6xl font-bold font-elmessiri bg-gradient-to-r from-foreground to-foreground/50 bg-clip-text text-transparent">
                             {isAdmin ? 'مركز التحكم' : 'ملفي الشخصي'}
@@ -77,7 +78,7 @@ const ProfilePage: React.FC = () => {
                                 >
                                     <img
                                         className="h-full w-full object-cover rounded-32 shadow-2xl backface-hidden"
-                                        src={`${userData.image}`}
+                                        src={getImageUrl(userData.image)}
                                         alt={userData.username}
                                     />
                                     <div className="absolute inset-0 flex items-center justify-center bg-primary rounded-32 rotate-y-180 backface-hidden shadow-Inner">
@@ -121,17 +122,17 @@ const ProfilePage: React.FC = () => {
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 h-full">
                                 <GlassCard className="flex flex-col items-center justify-center gap-2 bg-primary/5 hover:bg-primary/10 border-transparent">
                                     <TrendingUp className="w-8 h-8 text-primary" />
-                                    <span className="text-3xl font-bold">{isContributor ? userData.ChaptersCreated.length : userData.favorite.length}</span>
+                                    <span className="text-3xl font-bold">{isContributor ? (userData.ChaptersCreated?.length || 0) : (userData.favorite?.length || 0)}</span>
                                     <span className="text-xs text-muted-foreground">{isContributor ? 'فصل منشأ' : 'رواية مفضلة'}</span>
                                 </GlassCard>
                                 <GlassCard className="flex flex-col items-center justify-center gap-2 bg-sage-500/5 hover:bg-sage-500/10 border-transparent">
                                     <History className="w-8 h-8 text-sage-500" />
-                                    <span className="text-3xl font-bold">{userData.Lastview.length}</span>
+                                    <span className="text-3xl font-bold">{userData.Lastview?.length || 0}</span>
                                     <span className="text-xs text-muted-foreground">فصل مقروء أخيراً</span>
                                 </GlassCard>
                                 <GlassCard className="hidden md:flex flex-col items-center justify-center gap-2 bg-sage-600/5 hover:bg-sage-600/10 border-transparent">
                                     <Layout className="w-8 h-8 text-sage-600" />
-                                    <span className="text-3xl font-bold">{isContributor ? userData.NovelsCreated.length : '12'}</span>
+                                    <span className="text-3xl font-bold">{isContributor ? (userData.NovelsCreated?.length || 0) : '12'}</span>
                                     <span className="text-xs text-muted-foreground">{isContributor ? 'رواية منشأة' : 'مستوى القراءة'}</span>
                                 </GlassCard>
                             </div>
@@ -145,7 +146,7 @@ const ProfilePage: React.FC = () => {
                         icon={<Heart className="w-5 h-5 text-rose-500" />}
                         header={
                             <div className="flex gap-4 overflow-x-auto pb-4 pt-2 -mx-2 px-2 scrollbar-none">
-                                {userData.favorite.map((novel) => (
+                                {userData.favorite?.map((novel) => novel && (
                                     <Link
                                         to={`/novel/${novel._id}`}
                                         key={novel._id}
@@ -153,14 +154,14 @@ const ProfilePage: React.FC = () => {
                                     >
                                         <motion.img
                                             whileHover={{ scale: 1.05, y: -5 }}
-                                            src={`${novel.image || 'placeholder.svg'}`}
+                                            src={getImageUrl(novel.image)}
                                             className="w-full aspect-[3/4] object-cover rounded-2xl shadow-xl transition-all"
                                             alt={novel.title}
                                         />
                                         <div className="mt-2 text-[10px] font-bold text-center line-clamp-1 group-hover:text-primary">{novel.title}</div>
                                     </Link>
                                 ))}
-                                {userData.favorite.length === 0 && (
+                                {(!userData.favorite || userData.favorite.length === 0) && (
                                     <div className="w-full flex items-center justify-center text-muted-foreground h-32">
                                         لا توجد روايات مفضلة حالياً
                                     </div>
@@ -192,9 +193,9 @@ const ProfilePage: React.FC = () => {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {userData.NovelsCreated.map((novel) => (
+                                {userData.NovelsCreated?.map((novel) => novel && (
                                     <GlassCard key={novel._id} className="flex items-center gap-4 hover:border-primary/50 transition-all group">
-                                        <img src={novel.image} className="w-16 h-20 rounded-xl object-cover shadow-lg" alt={novel.title} />
+                                        <img src={getImageUrl(novel.image)} className="w-16 h-20 rounded-xl object-cover shadow-lg" alt={novel.title} />
                                         <div className="space-y-1 flex-grow">
                                             <h4 className="font-bold group-hover:text-primary transition-colors line-clamp-1">{novel.title}</h4>
                                             <p className="text-xs text-muted-foreground">تاريخ الإنشاء: {novel.createdAt ? new Date(novel.createdAt).toLocaleDateString() : 'غير معروف'}</p>
@@ -217,10 +218,10 @@ const ProfilePage: React.FC = () => {
                         سجل القراءة الأخير
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {userData.Lastview.map((view, index) => (
+                        {userData.Lastview?.map((view, index) => view.novel && (
                             <Link to={`/novel/${view.novel._id}`} key={index}>
                                 <GlassCard className="flex items-center gap-4 hover:bg-white/5 transition-colors border-white/5 h-24">
-                                    <img src={view.novel.image} className="w-12 h-16 rounded-lg object-cover" alt="" />
+                                    <img src={getImageUrl(view.novel.image)} className="w-12 h-16 rounded-lg object-cover" alt="" />
                                     <div className="space-y-1">
                                         <h4 className="text-sm font-bold truncate max-w-[150px]">{view.novel.title}</h4>
                                         <p className="text-xs text-primary flex items-center gap-1">

@@ -144,3 +144,25 @@
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
+
+/* 3D and Utility Classes */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.rounded-32 {
+  border-radius: 32px;
+}
+
+.shadow-Inner {
+  box-shadow: inset 0 2px 40px 0 rgba(0, 0, 0, 0.06);
+}
