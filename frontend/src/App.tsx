@@ -18,6 +18,7 @@ import Message from "./pages/Message";
 import ChatBot from "./pages/ChatBot";
 import TikTokPage from "./pages/TikTokPage";
 import Novels from "./pages/Novels";
+import AboutUs from "./pages/AboutUs";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
             />
             <Route path="/novels" element={<Novels />} />
             <Route path="/tiktok" element={<TikTokPage />} />
+            <Route path="/about" element={<AboutUs />} />
             <Route path="/*" element={<Error />} />
           </Routes>
 

@@ -29,7 +29,7 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 170 20% 90%;
+    --border: 170 20% 85%;
     --input: 170 20% 90%;
     --ring: 170 27% 50%;
 
@@ -83,11 +83,11 @@
 }
 
 .glass {
-  @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-xl;
+  @apply bg-white/70 backdrop-blur-xl border border-black/5 shadow-xl;
 }
 
 .dark .glass {
-  @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-2xl;
+  @apply bg-black/40 backdrop-blur-xl border border-white/5 shadow-2xl;
 }
 
 .premium-card {

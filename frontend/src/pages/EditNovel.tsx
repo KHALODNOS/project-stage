@@ -86,7 +86,7 @@ const EditNovel: React.FC = () => {
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
     const [publisher, setPublisher] = useState('');
-    const [translators, setTranslators] = useState<{ label: string; value: string }[]>([]);
+    // const [translators, setTranslators] = useState<{ label: string; value: string }[]>([]);
     const [description, setDescription] = useState('');
     const [status, setStatus] = useState('مستمرة');
     const [genres, setGenres] = useState<{ label: string; value: string }[]>([]);
@@ -116,7 +116,7 @@ const EditNovel: React.FC = () => {
                             setTitle(novel.title);
                             setAuthor(novel.author);
                             setPublisher(novel.publisher || '');
-                            setTranslators(novel.translators?.map((t: string) => ({ label: t, value: t })) || []);
+                            // setTranslators(novel.translators?.map((t: string) => ({ label: t, value: t })) || []);
                             setDescription(novel.description || '');
                             setStatus(novel.status || "مستمرة");
                             setGenres(novel.genres?.map((g: string) => ({ label: g, value: g })) || []);
@@ -152,7 +152,7 @@ const EditNovel: React.FC = () => {
         formData.append('title', title);
         formData.append('author', author);
         formData.append('publisher', publisher);
-        formData.append('translators', JSON.stringify(translators.map((translator) => translator.value)));
+        // formData.append('translators', JSON.stringify(translators.map((translator) => translator.value)));
         formData.append('description', description);
         formData.append('status', status);
         formData.append('genres', JSON.stringify(genres.map((genre) => genre.value)));

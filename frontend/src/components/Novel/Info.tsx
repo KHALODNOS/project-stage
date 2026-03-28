@@ -131,7 +131,7 @@ const Info = () => {
                   {novel?.status || "مستمر"}
                 </span>
                 <div className="flex items-center">
-                  {(ctx?.user?.role === "admin" || ctx?.user?.role === "translator") && (
+                {(ctx?.user?.role === "admin") && (
                     <div className="flex items-center gap-2">
                       <Link to={`/novel/${novelId}/addchapter`} className="flex items-center gap-2 px-4 py-2 glass rounded-xl text-emerald-500 hover:bg-emerald-500/10 transition-all font-bold text-sm">
                         <PlusCircle className="w-4 h-4" />
@@ -218,7 +218,7 @@ const Info = () => {
                   <span>{isFavorite ? 'في المفضلة' : 'أضف للمفضلة'}</span>
                 </motion.button>
 
-                <button className="p-4 glass rounded-2xl hover:bg-white/10 transition-colors">
+                <button className="p-4 glass rounded-2xl hover:bg-accent transition-colors">
                   <Share2 className="w-5 h-5" />
                 </button>
               </div>

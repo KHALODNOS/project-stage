@@ -17,11 +17,11 @@ router.get("/:novelId", allChapters);
 // Get a specific chapter of a novel
 router.get("/:novelId/:chapterId", getChapter);
 
-// Add a new chapter to a novel (admin or translator only)
+// Add a new chapter to a novel (admin only)
 router.post(
   "/:novelId",
   authenticate,
-  authorize(["admin", "translator"]),
+  authorize(["admin"]),
   addChapter,
 );
 
@@ -29,15 +29,15 @@ router.post(
 router.put(
   "/:novelId/:chapterId",
   authenticate,
-  authorize(["admin", "translator"]),
+  authorize(["admin"]),
   editChapter,
 );
 
-// Delete  chapter (admin or translator only)
+// Delete  chapter (admin only)
 router.delete(
   "/:novelId/:chapterId",
   authenticate,
-  authorize(["admin", "translator"]),
+  authorize(["admin"]),
   deleteChapter,
 );
 

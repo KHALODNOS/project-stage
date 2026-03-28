@@ -31,13 +31,13 @@ const Novels = () => {
         <div className="min-h-screen pb-20 pt-10 px-6" dir="rtl">
             <div className="max-w-7xl mx-auto space-y-12">
 
-                <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-white/5 pb-10">
+                <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-border pb-10">
                     <div className="space-y-2">
                         <div className="flex items-center gap-2 text-primary font-bold text-sm tracking-widest uppercase">
                             <BookOpen className="w-4 h-4" />
                             مكتبة الروايات
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-black font-elmessiri text-white">
+                        <h1 className="text-4xl md:text-5xl font-black font-elmessiri text-foreground">
                             استكشف <span className="text-primary">جميع</span> الروايات
                         </h1>
                     </div>
@@ -49,7 +49,7 @@ const Novels = () => {
                             placeholder="ابحث عن روايتك القادمة..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full glass bg-white/5 border-white/10 rounded-2xl py-4 pr-14 pl-6 focus:outline-none focus:border-primary/50 transition-all text-white font-bold"
+                            className="w-full glass bg-muted/50 border border-border rounded-2xl py-4 pr-14 pl-6 focus:outline-none focus:border-primary/50 transition-all text-foreground font-bold font-elmessiri"
                         />
                     </div>
                 </header>
@@ -60,7 +60,7 @@ const Novels = () => {
                         <span className="hidden sm:inline opacity-50">تعرض أحدث الروايات المضافة</span>
                     </div>
 
-                    <button className="flex items-center gap-2 glass px-4 py-2 rounded-xl text-sm font-bold hover:bg-white/10 transition-colors">
+                    <button className="flex items-center gap-2 glass px-4 py-2 rounded-xl text-sm font-bold hover:bg-accent transition-colors">
                         <SlidersHorizontal className="w-4 h-4" />
                         تصفية
                     </button>

@@ -9,7 +9,7 @@ const novelSchema = new mongoose.Schema({
   genres: [String],
   author: { type: String, required: true },
   publisher: String,
-  translators: [String],
+
   rating: Number,
   numberOfReaders: Number,
   numberOfAllChapters: Number,

@@ -8,7 +8,7 @@ const notificationSchema = new mongoose.Schema({
 
   toggleRole: {
     type: [String],
-    enum: ["admin", "user", "translator"],
+    enum: ["admin", "user"],
   },
 
   targetUser: {

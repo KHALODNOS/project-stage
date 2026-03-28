@@ -129,7 +129,7 @@ exports.addNovel = async (req, res) => {
         : 0,
       dateOfPublication: dateOfPublication ? Number(dateOfPublication) : 0,
       publisher,
-      translators: [req.user.username],
+
       image: imageUrl,
     });
     await novel.save();
@@ -138,12 +138,12 @@ exports.addNovel = async (req, res) => {
     const notif = await Notification.create({
       message: `نشر المسؤول رواية جديدة بعنوان 
       ${title}`,
-      toggleRole: ["user", "translator"],
+      toggleRole: ["user"],
     });
 
     const io = require("../socket").getIO();
     io.to("user").emit("newNotification", notif);
-    io.to("translator").emit("newNotification", notif);
+
 
     const user = req.user;
     // Add novel to user's NovelsCreated field
@@ -231,7 +231,7 @@ exports.editNovel = async (req, res) => {
       ? Number(dateOfPublication)
       : novel.dateOfPublication;
     novel.publisher = publisher || novel.publisher;
-    novel.translators = [req.user.username]; // Update this as needed
+
     novel.image = novel.image;
 
     await novel.save();
@@ -240,12 +240,12 @@ exports.editNovel = async (req, res) => {
     const notif = await Notification.create({
       message: `حدث المسؤول رواية  بعنوان 
       ${title}`,
-      toggleRole: ["user", "translator"],
+      toggleRole: ["user"],
     });
 
     const io = require("../socket").getIO();
     io.to("user").emit("newNotification", notif);
-    io.to("translator").emit("newNotification", notif);
+
     res.status(200).send(novel);
   } catch (error) {
     res.status(400).send(error);

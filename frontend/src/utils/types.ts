@@ -29,7 +29,7 @@ export type Novel = {
   genres?: string[];
   author: string;
   publisher?: string;
-  translators?: string[];
+  // translators removed
   rating?: number;
   numberOfReaders?: number;
   numberOfAllChapters?: number;
@@ -63,7 +63,7 @@ export type Chapter = {
   chapterNumber: number;
   title: string;
   content: string;
-  translators: string[];
+  // translators removed
   createdAt: Date;
   updatedAt: Date;
 };
@@ -73,7 +73,7 @@ export interface User {
   username: string;
   nickname: string;
   email: string;
-  role: 'admin' | 'translator' | 'user';
+  role: 'admin' | 'user';
   birthday: string;
   image: string;
   favorite: string[];
@@ -91,7 +91,7 @@ export interface Userprofile {
   username: string;
   nickname: string;
   email: string;
-  role: 'admin' | 'translator' | 'user';
+  role: 'admin' | 'user';
   birthday: string;
   image: string;
   favorite: Novel[];

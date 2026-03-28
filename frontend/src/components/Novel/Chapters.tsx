@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import useHttp from '../../hooks/usehttp';
 import formatDate from "../../utils/formatDate";
 import { motion } from 'framer-motion';
-import { Search, BookOpen, User, Calendar, ArrowUpRight } from 'lucide-react';
+import { Search, BookOpen, Calendar, ArrowUpRight } from 'lucide-react';
 
 const Chapters = () => {
   const { sendData, isLoading, errorMessage } = useHttp();
@@ -32,7 +32,7 @@ const Chapters = () => {
 
   return (
     <section className="mt-12 max-w-7xl mx-auto px-6 mb-20" dir="rtl">
-      <div className="glass p-8 rounded-3xl border border-white/10 space-y-8 shadow-2xl">
+      <div className="glass p-8 rounded-3xl border border-border space-y-8 shadow-2xl">
         {/* Header & Search */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-3">
@@ -52,7 +52,7 @@ const Chapters = () => {
               placeholder="بحث عن فصل..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pr-12 pl-4 focus:outline-none focus:border-primary/50 transition-all text-sm font-medium"
+              className="w-full bg-muted/50 border border-border rounded-2xl py-3 pr-12 pl-4 focus:outline-none focus:border-primary/50 transition-all text-sm font-medium"
             />
           </div>
         </div>
@@ -61,7 +61,6 @@ const Chapters = () => {
         <div className="hidden md:flex items-center gap-4 px-6 py-4 bg-primary/5 rounded-2xl text-xs font-bold text-primary tracking-widest uppercase">
           <p className="w-24">الفصل</p>
           <p className="flex-grow">عنوان الفصل</p>
-          <p className="w-40">المترجم</p>
           <p className="w-32">التاريخ</p>
           <p className="w-10"></p>
         </div>
@@ -77,7 +76,7 @@ const Chapters = () => {
             >
               <Link
                 to={`/novel/${novelId}/${chapter._id}`}
-                className="flex flex-col md:flex-row md:items-center gap-4 p-4 md:px-6 rounded-2xl bg-white/5 border border-white/5 hover:border-primary/30 hover:bg-primary/5 transition-all group"
+                className="flex flex-col md:flex-row md:items-center gap-4 p-4 md:px-6 rounded-2xl bg-muted/30 border border-border hover:border-primary/30 hover:bg-primary/5 transition-all group"
               >
                 <div className="flex items-center justify-between md:w-24">
                   <span className="text-sm font-bold text-primary">فصل {chapter.chapterNumber}</span>
@@ -91,10 +90,7 @@ const Chapters = () => {
                 </div>
 
                 <div className="flex items-center gap-6 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-2 w-40">
-                    <User className="w-3.5 h-3.5 text-primary/50" />
-                    <span>{chapter.translators}</span>
-                  </div>
+
                   <div className="flex items-center gap-2 w-32">
                     <Calendar className="w-3.5 h-3.5 text-primary/50" />
                     <span>{formatDate(new Date(chapter.createdAt))}</span>

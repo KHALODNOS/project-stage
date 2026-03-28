@@ -41,7 +41,7 @@ router.post(
 router.put(
   "/:id",
   authenticate,
-  authorize(["admin", "translator"]),
+  authorize(["admin"]),
   upload.single("image"),
   editNovel,
 );

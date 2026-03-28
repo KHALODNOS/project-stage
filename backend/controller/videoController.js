@@ -5,6 +5,7 @@ const notification = require("../models/notification");
 
 exports.uploadVideo = async (req, res) => {
   try {
+    
     const userId = req.user._id;
     const { description } = req.body;
 
@@ -23,14 +24,14 @@ exports.uploadVideo = async (req, res) => {
     // notify all roles about the new video
     const notif = await notification.create({
       message: `قام ${req.user.username} بنشر فيديو جديد`,
-      toggleRole: ["admin", "user", "translator"],
+      toggleRole: ["admin", "user"],
       sender: userId
     });
 
     const io = require("../socket").getIO();
     io.to("admin").emit("newNotification", notif);
     io.to("user").emit("newNotification", notif);
-    io.to("translator").emit("newNotification", notif);
+
 
 
     res.json(video);

@@ -42,7 +42,7 @@ const ProfilePage: React.FC = () => {
     if (!userData) return <div className="min-h-screen flex items-center justify-center">لم يتم العثور على بيانات المستخدم</div>;
 
     const isAdmin = userData.role === 'admin';
-    const isContributor = isAdmin || userData.role === 'translator';
+    const isContributor = isAdmin;
 
     return (
         <motion.div
@@ -68,7 +68,7 @@ const ProfilePage: React.FC = () => {
                 <BentoGrid className="md:auto-rows-[25rem]">
                     {/* User Profile Card */}
                     <BentoGridItem
-                        className="md:col-span-1 row-span-2 glass border-white/10"
+                        className="md:col-span-1 row-span-2 glass"
                         header={
                             <div className="flex flex-col items-center gap-6 pt-6">
                                 <motion.div
@@ -115,7 +115,7 @@ const ProfilePage: React.FC = () => {
 
                     {/* Stats & Activity (Only for high engagement users/admins) */}
                     <BentoGridItem
-                        className="md:col-span-2 glass border-white/10"
+                        className="md:col-span-2 glass"
                         title="إحصائيات النظام"
                         icon={<BarChart3 className="w-5 h-5 text-primary" />}
                         header={
@@ -141,7 +141,7 @@ const ProfilePage: React.FC = () => {
 
                     {/* Favorite Novels (Full Width) */}
                     <BentoGridItem
-                        className="md:col-span-2 glass border-white/10 overflow-hidden"
+                        className="md:col-span-2 glass overflow-hidden"
                         title="المكتبة المفضلة"
                         icon={<Heart className="w-5 h-5 text-rose-500" />}
                         header={
@@ -179,7 +179,7 @@ const ProfilePage: React.FC = () => {
                             animate={{ opacity: 1, y: 0 }}
                             className="space-y-8"
                         >
-                            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                            <div className="flex items-center justify-between border-b border-border pb-4">
                                 <h3 className="text-2xl font-bold font-elmessiri flex items-center gap-2">
                                     <PlusSquare className="text-primary" />
                                     إدارة المحتوى المنشور
@@ -213,14 +213,14 @@ const ProfilePage: React.FC = () => {
 
                 {/* Reading History */}
                 <section className="space-y-8">
-                    <h3 className="text-2xl font-bold font-elmessiri flex items-center gap-2 border-b border-white/10 pb-4">
+                    <h3 className="text-2xl font-bold font-elmessiri flex items-center gap-2 border-b border-border pb-4">
                         <History className="text-sage-500" />
                         سجل القراءة الأخير
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {userData.Lastview?.map((view, index) => view.novel && (
                             <Link to={`/novel/${view.novel._id}`} key={index}>
-                                <GlassCard className="flex items-center gap-4 hover:bg-white/5 transition-colors border-white/5 h-24">
+                                <GlassCard className="flex items-center gap-4 hover:bg-accent transition-colors border-border h-24">
                                     <img src={getImageUrl(view.novel.image)} className="w-12 h-16 rounded-lg object-cover" alt="" />
                                     <div className="space-y-1">
                                         <h4 className="text-sm font-bold truncate max-w-[150px]">{view.novel.title}</h4>

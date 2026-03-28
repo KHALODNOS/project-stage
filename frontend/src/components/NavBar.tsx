@@ -14,7 +14,8 @@ import {
     PlusCircle,
     Menu,
     X,
-    Bell
+    Bell,
+    Users
 } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
 import { apiUrl } from '../utils/constvar';
@@ -167,6 +168,7 @@ const NavBar = () => {
         { name: 'تيك توك', path: '/tiktok', icon: Video },
         ...(ctx?.token ? [{ name: 'الذكاء الاصطناعي', path: '/chatbot', icon: Bot }] : []),
         ...(ctx?.token ? [{ name: 'المحادثات', path: '/messages', icon: MessageSquare }] : []),
+        { name: 'من نحن', path: '/about', icon: Users },
     ];
 
     return (
@@ -189,8 +191,8 @@ const NavBar = () => {
                                 key={link.path}
                                 to={link.path}
                                 className={cn(
-                                    "flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-200 hover:bg-white/10 group",
-                                    pathname === link.path ? "text-primary bg-white/5" : "text-foreground/70"
+                                    "flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-200 hover:bg-accent group",
+                                    pathname === link.path ? "text-primary bg-muted/50" : "text-foreground/70"
                                 )}
                             >
                                 <link.icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -228,7 +230,7 @@ const NavBar = () => {
                                         <Link
                                             key={novel._id}
                                             to={`/novel/${novel._id}`}
-                                            className="flex items-center gap-3 p-3 hover:bg-white/10 transition-colors border-b border-white/5 last:border-0"
+                                            className="flex items-center gap-3 p-3 hover:bg-accent transition-colors border-b border-border last:border-0"
                                             onClick={() => setSearchResults([])}
                                         >
                                             <img src={getImageUrl(novel.image)} alt={novel.title} className="w-12 h-16 object-cover rounded-lg shadow-md" />
@@ -246,7 +248,7 @@ const NavBar = () => {
                     {/* Dark Mode Toggle */}
                     <button
                         onClick={handleDarkModeToggle}
-                        className="p-2 glass rounded-xl hover:bg-white/20 transition-colors"
+                        className="p-2 glass rounded-xl hover:bg-accent transition-colors"
                         aria-label="Toggle theme"
                     >
                         {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-sage-500" />}
@@ -260,7 +262,7 @@ const NavBar = () => {
                                     setIsOpenNotifications(!isOpenNotifications);
                                     if (!isOpenNotifications) setUnreadCount(0);
                                 }}
-                                className="p-2 glass rounded-xl hover:bg-white/20 transition-colors relative"
+                                className="p-2 glass rounded-xl hover:bg-accent transition-colors relative"
                                 aria-label="Notifications"
                             >
                                 <Bell className="w-5 h-5 text-foreground/70" />
@@ -277,10 +279,10 @@ const NavBar = () => {
                                         initial={{ opacity: 0, scale: 0.9, y: 10 }}
                                         animate={{ opacity: 1, scale: 1, y: 0 }}
                                         exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                                        className="absolute right-0 mt-3 w-72 glass rounded-2xl shadow-2xl py-3 overflow-hidden z-50 border border-white/10"
+                                        className="absolute right-0 mt-3 w-72 glass rounded-2xl shadow-2xl py-3 overflow-hidden z-50 border border-border"
                                         dir="rtl"
                                     >
-                                        <div className="px-4 pb-2 mb-2 border-b border-white/10 flex justify-between items-center">
+                                        <div className="px-4 pb-2 mb-2 border-b border-border flex justify-between items-center">
                                             <div className="flex flex-col">
                                                 <span className="text-sm font-bold font-elmessiri">الاشعارات</span>
                                                 <span className="text-[9px] text-foreground/40 font-bold uppercase tracking-wider">{notifications.length} تنبيه</span>
@@ -305,7 +307,7 @@ const NavBar = () => {
                                                 </div>
                                             ) : (
                                                 notifications.map((notif, idx) => (
-                                                    <div key={idx} className="px-4 py-3 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 group cursor-default">
+                                                    <div key={idx} className="px-4 py-3 hover:bg-accent transition-colors border-b border-border last:border-0 group cursor-default">
                                                         <p className="text-xs text-foreground/80 leading-relaxed">{notif.message}</p>
                                                         <span className="text-[9px] text-foreground/30 mt-1 block">
                                                             {new Date(notif.createdAt).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
@@ -328,7 +330,7 @@ const NavBar = () => {
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => setIsOpenProfile(!isOpenProfile)}
-                                className="flex items-center gap-2 glass p-1 pl-3 rounded-xl hover:bg-white/20 transition-colors"
+                                className="flex items-center gap-2 glass p-1 pl-3 rounded-xl hover:bg-accent transition-colors"
                             >
                                 <img src={getImageUrl(ctx?.user?.image)} alt="Profile" className="w-8 h-8 rounded-lg object-cover shadow-Inner" />
                                 <span className="hidden lg:block text-sm font-semibold">{ctx?.user?.username}</span>
@@ -343,7 +345,7 @@ const NavBar = () => {
                                         className="absolute right-0 mt-3 w-48 glass rounded-2xl shadow-2xl py-2 overflow-hidden z-50"
                                         dir="rtl"
                                     >
-                                        <Link to={`/profile/${ctx?.user?.username}`} className="flex items-center gap-2 px-4 py-2.5 hover:bg-white/10 transition-colors">
+                                        <Link to={`/profile/${ctx?.user?.username}`} className="flex items-center gap-2 px-4 py-2.5 hover:bg-accent transition-colors">
                                             <User className="w-4 h-4" />
                                             <span>حسابي</span>
                                         </Link>
@@ -353,7 +355,7 @@ const NavBar = () => {
                                                 <span>إنشاء رواية</span>
                                             </Link>
                                         )}
-                                        <div className="h-px bg-white/5 my-1" />
+                                        <div className="h-px bg-border my-1" />
                                         <button onClick={ctx?.logout} className="flex items-center gap-2 w-full px-4 py-2.5 hover:bg-destructive/20 text-destructive transition-colors">
                                             <LogOut className="w-4 h-4" />
                                             <span>تسجيل الخروج</span>
@@ -395,7 +397,7 @@ const NavBar = () => {
                                     key={link.path}
                                     to={link.path}
                                     onClick={() => setIsOpenMenu(false)}
-                                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/10 transition-colors"
+                                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-accent transition-colors"
                                 >
                                     <link.icon className="w-5 h-5 text-primary" />
                                     <span className="font-bold">{link.name}</span>

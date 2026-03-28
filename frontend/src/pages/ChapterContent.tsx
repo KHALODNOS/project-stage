@@ -192,7 +192,7 @@ const ChapterContent = () => {
   return (
     <div className={cn(
       "min-h-screen transition-all duration-700 selection:bg-primary/30 selection:text-primary",
-      isFocusMode ? "bg-[#0a0a0a] text-zinc-400" : "bg-[#111111] text-zinc-200"
+      isFocusMode ? "bg-background/95 text-muted-foreground" : "bg-background text-foreground"
     )}>
       {/* Scroll Progress Tube */}
       <div className="fixed top-0 left-0 right-0 h-1 z-[100] bg-white/5">
@@ -217,14 +217,14 @@ const ChapterContent = () => {
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-6xl font-black font-elmessiri text-center leading-[1.2] text-white"
+              className="text-4xl md:text-6xl font-black font-elmessiri text-center leading-[1.2] text-foreground"
             >
               {chapter?.title}
             </motion.h1>
 
-            <div className="flex flex-wrap items-center justify-center gap-6 text-zinc-500 text-sm font-bold">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-muted-foreground text-sm font-bold">
               <span className="flex items-center gap-2"><Clock className="w-4 h-4" /> {readingTime} دقيقة قراءة</span>
-              <div className="w-1.5 h-1.5 rounded-full bg-zinc-800" />
+              <div className="w-1.5 h-1.5 rounded-full bg-border" />
               <Link to={`/novel/${novelId}`} className="flex items-center gap-2 hover:text-primary transition-all">
                 <BookOpen className="w-4 h-4" /> العودة للرواية
               </Link>
@@ -253,7 +253,7 @@ const ChapterContent = () => {
                className="flex flex-col items-center gap-6 mt-32 py-10"
             >
                 <div className="w-16 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent rounded-full" />
-                <span className="text-zinc-600 font-elmessiri text-lg font-bold">انتهى الفصل {chapter?.chapterNumber}</span>
+                <span className="text-muted-foreground font-elmessiri text-lg font-bold">انتهى الفصل {chapter?.chapterNumber}</span>
                 
                 <button 
                   onClick={handleBookmark}
@@ -276,7 +276,7 @@ const ChapterContent = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Previous Chapter */}
               <div className="group">
-                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-zinc-600 mb-3 block mr-4">الفصل السابق</span>
+                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground mb-3 block mr-4">الفصل السابق</span>
                 {chapter?.prevChapterId ? (
                   <Link
                     to={`/novel/${novelId}/${chapter.prevChapterId}`}
@@ -286,8 +286,8 @@ const ChapterContent = () => {
                         <ChevronRight className="w-6 h-6 text-primary" />
                     </div>
                     <div className="text-right">
-                        <span className="block text-xs text-zinc-500 font-bold mb-1">الرجوع إلى</span>
-                        <span className="font-bold text-lg md:text-xl">الفصل السابق</span>
+                        <span className="block text-xs text-muted-foreground font-bold mb-1">الرجوع إلى</span>
+                        <span className="font-bold text-lg md:text-xl text-foreground">الفصل السابق</span>
                     </div>
                   </Link>
                 ) : (
@@ -299,7 +299,7 @@ const ChapterContent = () => {
 
               {/* Next Chapter */}
               <div className="group text-left">
-                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-zinc-600 mb-3 block ml-4">الفصل التالي</span>
+                <span className="text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground mb-3 block ml-4">الفصل التالي</span>
                 {chapter?.nextChapterId ? (
                   <Link
                     to={`/novel/${novelId}/${chapter.nextChapterId}`}
@@ -329,8 +329,8 @@ const ChapterContent = () => {
                 to={`/novel/${novelId}`}
                 className="flex items-center justify-center gap-3 py-6 glass rounded-[2.5rem] border-white/5 hover:bg-white/5 transition-all group"
             >
-                <BookOpen className="w-5 h-5 text-zinc-500 group-hover:text-primary transition-colors" />
-                <span className="text-sm font-bold text-zinc-500 group-hover:text-white transition-colors">العودة إلى فهرس الرواية الرئيسي</span>
+                <BookOpen className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                <span className="text-sm font-bold text-muted-foreground group-hover:text-foreground transition-colors">العودة إلى فهرس الرواية الرئيسي</span>
             </Link>
           </footer>
 
@@ -389,7 +389,7 @@ const ChapterContent = () => {
                 />
                 <motion.aside
                   initial={{ x: 400 }} animate={{ x: 0 }} exit={{ x: 400 }}
-                  className="fixed inset-y-0 right-0 w-full sm:w-[450px] bg-[#0d0d0d] border-r border-white/5 z-[110] shadow-[0_0_100px_rgba(0,0,0,0.8)] flex flex-col"
+                  className="fixed inset-y-0 right-0 w-full sm:w-[450px] bg-card border-r border-border z-[110] shadow-[0_0_100px_rgba(0,0,0,0.8)] flex flex-col"
                   dir="rtl"
                 >
                   <div className="p-8 border-b border-white/5 flex items-center justify-between">
@@ -473,7 +473,7 @@ const ChapterContent = () => {
                   <div className="p-8 border-t border-white/5">
                     <button
                       onClick={() => setShowSettings(false)}
-                      className="w-full bg-white text-black font-black py-4 rounded-[2rem] hover:scale-[1.02] transition-all flex items-center justify-center gap-3"
+                      className="w-full bg-primary text-white font-black py-4 rounded-[2rem] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-lg shadow-primary/20"
                     >
                       <MousePointer2 className="w-5 h-5 fill-current" /> حفظ التفضيلات
                     </button>

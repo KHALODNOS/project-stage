@@ -64,7 +64,7 @@ exports.addChapter = async (req, res) => {
     const chapter = new Chapter({
       ...req.body,
       novelId: req.params.novelId,
-      translators: [req.user.username],
+
     });
     await chapter.save();
     console.log("Chapter is saved");
@@ -105,10 +105,7 @@ exports.addChapter = async (req, res) => {
       targetNovel.chapter_info.lastThreeChapters.pop();
     }
 
-    // Add translator to novel's translators list if not already there
-    if (!targetNovel.translators.includes(req.user.username)) {
-      targetNovel.translators.push(req.user.username);
-    }
+
 
     await targetNovel.save();
     console.log("Novel updated");
